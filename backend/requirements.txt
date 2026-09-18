@@ -4,3 +4,7 @@ scikit-learn
 joblib
 matplotlib
 seaborn
+fastapi
+uvicorn
+pydantic
+scipy
