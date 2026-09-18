@@ -222,3 +222,8 @@ backend/data/*.csv
 
 # macOS
 .DS_Store
+
+# Local ML training artifacts
+backend/data/*.npz
+backend/data/y_*.csv
+backend/models/*.joblib
