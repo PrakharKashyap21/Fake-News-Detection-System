@@ -1,77 +1,116 @@
-# Fake News Detection System using Machine Learning & NLP
+# Fake News Detection System
 
-A production-grade Machine Learning and Natural Language Processing (NLP) system designed to analyze news headlines and body text to predict whether an article resembles real or fake news based on statistical patterns learned from the WELFake dataset.
+A machine-learning-based text classification application that predicts whether submitted news content resembles FAKE or REAL news based on statistical patterns learned from the WELFake dataset.
 
 ---
 
-## Architecture & System Flow
+## Overview
+
+The Fake News Detection System provides a streamlined machine learning pipeline and single-page web interface to analyze news headlines and body text. The system leverages Natural Language Processing (NLP) techniques and a Linear Support Vector Machine (LinearSVC) classifier to detect linguistic patterns associated with fake or real news.
+
+> **Note:** This application is a statistical pattern recognition system and is not an authoritative fact-checker or truth detector.
+
+---
+
+## Architecture
 
 ```
-Browser  ──►  React UI  ──►  Axios  ──►  FastAPI Backend  ──►  TF-IDF + Linear SVM  ──►  JSON Response  ──►  React Result Card
+Browser
+  ↓
+React + Vite
+  ↓
+Axios
+  ↓
+FastAPI
+  ↓
+TF-IDF Vectorizer
+  ↓
+LinearSVC Model
+  ↓
+JSON response
+  ↓
+React result card
 ```
 
 ---
 
 ## Features
 
-- **NLP Pipeline**: Custom text normalization and TF-IDF feature extraction (unigrams + bigrams).
-- **Leakage-Safe Methodology**: Stratified train/test splitting and TF-IDF fitting strictly isolated to training data.
-- **Optimized Machine Learning**: Linear Support Vector Machine (LinearSVC) tuned via 12 controlled hyperparameter and feature extraction experiments.
-- **FastAPI Backend API**: Lightweight, RESTful API providing real-time text classification and model confidence scoring.
-- **Modern React Frontend**: Clean, responsive single-page web interface built with React, Vite, Axios, and Vanilla CSS.
+- **Headline & Article Classification**: Accepts optional headlines and article body text for prediction.
+- **TF-IDF Text Representation**: Extracts unigram and bigram features with sublinear term frequency scaling.
+- **Linear SVM Classification**: High-accuracy binary classification model optimized for high-dimensional sparse text data.
+- **FastAPI Backend API**: High-performance RESTful API endpoints with request validation and health monitoring.
+- **React Frontend**: Clean, responsive single-page user interface with real-time model confidence visualization.
+- **Decision Margin Confidence**: Derived directly from the SVM decision margin for model output interpretation.
 
 ---
 
 ## Technology Stack
 
-- **Core & Language**: Python 3.10+, JavaScript (ES6+)
-- **Machine Learning & NLP**: Scikit-Learn, SciPy, NumPy, Pandas, Joblib
-- **Feature Extraction**: TF-IDF Vectorizer (1,016,445 n-grams)
-- **Classifier**: Linear Support Vector Machine (`LinearSVC`, `C=2.0`)
-- **Backend API**: FastAPI, Uvicorn, Pydantic
-- **Frontend UI**: React 19, Vite, Axios, Vanilla CSS
+- **Backend / Machine Learning**: Python 3.10+, Scikit-Learn, SciPy, NumPy, Pandas, Joblib, FastAPI, Uvicorn, Pydantic
+- **Frontend**: React 19, Vite, Axios, Vanilla CSS
+- **Dataset**: WELFake Dataset (Kaggle)
 
 ---
 
 ## Dataset & Preprocessing
 
-- **Dataset**: WELFake Dataset (72,134 raw news articles: 35,028 FAKE, 37,106 REAL).
+- **Dataset**: WELFake Dataset (72,134 raw news records).
 - **Data Cleaning**:
-  - Dropped index column (`Unnamed: 0`).
-  - Normalized title and body text (safe string conversion, whitespace trimming, space folding).
-  - Merged title and text into a unified `content` feature.
-  - Removed 8,462 redundant exact duplicate content rows prior to splitting.
-  - Final Cleaned Dataset Size: **63,672 articles** (34,789 FAKE / 54.64%, 28,883 REAL / 45.36%).
-- **Train / Test Split**:
-  - Stratified 80% Training (**50,937 samples**) / 20% Held-Out Testing (**12,735 samples**).
-  - Verified **0 overlapping normalized content items** between train and test sets to guarantee no data leakage.
+  - Removed non-content index column (`Unnamed: 0`).
+  - Safe text normalization (string conversion, whitespace trimming, and space folding).
+  - Combined headline and article body into a single `content` feature.
+  - Validated content and label availability (labels: `0 = FAKE`, `1 = REAL`).
+  - Removed 8,462 redundant exact duplicate content records prior to train/test split.
+  - Final Cleaned Dataset: **63,672 records** (34,789 FAKE / 54.64%, 28,883 REAL / 45.36%).
+
+---
+
+## Data Split
+
+- **Training Samples**: 50,937 samples (80%)
+- **Held-Out Test Samples**: 12,735 samples (20%)
+- **Split Strategy**: Stratified 80/20 train/test split (`random_state=42`).
+- **Data Leakage Validation**: **0 overlapping normalized content records** between training and testing sets.
+
+---
+
+## Machine Learning Pipeline
+
+- **Text Normalization**: Lowercased, unicode accent stripping, whitespace folded.
+- **TF-IDF Configuration**:
+  - `TfidfVectorizer(lowercase=True, strip_accents="unicode", ngram_range=(1, 2), min_df=3, max_df=0.95, sublinear_tf=True)`
+  - Vocabulary Size: **1,016,445 n-grams** (learned exclusively from training data).
+- **Classifier Configuration**:
+  - `LinearSVC(C=2.0, max_iter=5000, random_state=42)`
 
 ---
 
 ## Model Selection & Optimization
 
-1. **Model Comparison (80/20 Inner Validation Split)**:
-   - Logistic Regression (`C=1.0`): Macro F1 = 0.9515
-   - Multinomial Naive Bayes (`alpha=1.0`): Macro F1 = 0.8424
-   - **Linear Support Vector Machine (`C=1.0`)**: Macro F1 = **0.9715** (Top Performer)
+Model selection was conducted using **12 controlled hyperparameter and feature extraction experiments** on an internal 80/20 stratified validation split created exclusively from the training dataset.
 
-2. **Hyperparameter & TF-IDF Tuning (12 Controlled Experiments)**:
-   - Best Configuration: `Config C` (`ngram_range=(1, 2)`, `min_df=3`, `max_df=0.95`, `sublinear_tf=True`) paired with `LinearSVC(C=2.0, max_iter=5000, random_state=42)`.
-   - Validation Macro F1: **0.9733** | Validation Accuracy: **97.35%**.
+Candidate models evaluated during selection:
+- **Logistic Regression** (`C=1.0`): Validation Macro F1 = 0.9515
+- **Multinomial Naive Bayes** (`alpha=1.0`): Validation Macro F1 = 0.8424
+- **Linear Support Vector Machine** (`C=1.0`): Validation Macro F1 = 0.9715
+
+Following hyperparameter tuning across C parameters (0.5, 1.0, 2.0) and TF-IDF configurations, `LinearSVC` with `C=2.0` and `min_df=3` unigram+bigram TF-IDF yielded the top validation performance (Validation Macro F1: **0.9733**).
+
+> **Methodology Note:** The held-out test set was used only for final evaluation and was not used for model selection.
 
 ---
 
-## Final Production Model Performance (Held-Out Test Set)
+## Final Production Model Results
 
-Evaluated **exactly once** on the locked test set (**12,735 samples**):
+The final production model was evaluated **exactly once** on the locked held-out test set (**12,735 samples**):
 
-| Metric | Score |
-| :--- | :--- |
-| **Accuracy** | **97.38%** (0.9738) |
-| **Macro F1-Score** | **0.9736** |
-| **Weighted F1-Score** | **0.9738** |
+### Overall Held-Out Test Metrics
+- **Accuracy**: **97.38%** (0.9738)
+- **Macro F1-Score**: **0.9736**
+- **Weighted F1-Score**: **0.9738**
 
-### Per-Class Detailed Performance
+### Per-Class Performance Breakdown
 
 | Class | Label | Precision | Recall | F1-Score | Support |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -81,72 +120,55 @@ Evaluated **exactly once** on the locked test set (**12,735 samples**):
 ### Confusion Matrix
 
 ```
-                  Predicted
-                  FAKE      REAL
-Actual FAKE       6775       183
-Actual REAL        151      5626
-```
-- **True Negatives (TN - Actual FAKE, Pred FAKE)**: 6,775
-- **False Positives (FP - Actual FAKE, Pred REAL)**: 183
-- **False Negatives (FN - Actual REAL, Pred FAKE)**: 151
-- **True Positives (TP - Actual REAL, Pred REAL)**: 5,626
+             Predicted
+             FAKE   REAL
 
----
-
-## Local Setup & Installation
-
-### Prerequisites
-- Python 3.10 or higher
-- Node.js 18 or higher & npm
-
-### 1. Backend Setup
-From the project root directory:
-
-```bash
-# Install backend Python dependencies
-pip install -r backend/requirements.txt
-
-# Start the FastAPI backend server on port 8008
-python3 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8008 --reload
+Actual FAKE  6775    183
+Actual REAL   151   5626
 ```
 
-The API will be live at `http://127.0.0.1:8008`.
+- **True Negatives (Actual FAKE, Predicted FAKE)**: 6,775
+- **False Positives (Actual FAKE, Predicted REAL)**: 183
+- **False Negatives (Actual REAL, Predicted FAKE)**: 151
+- **True Positives (Actual REAL, Predicted REAL)**: 5,626
 
-### 2. Frontend Setup
-Open a new terminal window:
-
-```bash
-# Navigate to frontend directory
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start the React Vite dev server
-npm run dev
-```
-
-Open `http://localhost:5173` in your browser to use the single-page application.
+> The held-out test set was used only for final evaluation and was not used for model selection.
 
 ---
 
 ## API Documentation
 
-### `POST /predict`
-Classifies a news article headline and/or body text.
+### Endpoints
 
-#### Example Request
+#### `GET /`
+Service information endpoint.
 ```json
-POST http://127.0.0.1:8008/predict
-Content-Type: application/json
-
 {
-  "title": "Federal Reserve Maintained Benchmark Interest Rates",
-  "text": "The Federal Reserve held interest rates steady today following a two-day meeting in Washington."
+  "status": "ok",
+  "service": "Fake News Detection API"
 }
 ```
 
-#### Example Response (HTTP 200 OK)
+#### `GET /health`
+Health check status.
+```json
+{
+  "status": "healthy"
+}
+```
+
+#### `POST /predict`
+Classifies news headline and/or article text.
+
+**Example Request:**
+```json
+{
+  "title": "U.S. Federal Reserve Announces Interest Rate Decision",
+  "text": "The Federal Reserve kept interest rates unchanged today following its two-day policy meeting in Washington."
+}
+```
+
+**Example Response (HTTP 200 OK):**
 ```json
 {
   "prediction": "LIKELY REAL NEWS",
@@ -156,12 +178,60 @@ Content-Type: application/json
 }
 ```
 
+### Model Confidence Calculation
+Model confidence is calculated from the SVM decision margin using a deterministic transformation:
+$$\text{confidence} = 100 \times (1 - e^{-|\text{decision\_margin}|})$$
+This value represents a transformed decision-margin score and is **not** a calibrated probability.
+
 ---
 
-## Project Disclaimers & Limitations
+## Local Setup & Run Instructions
 
-- **Statistical Pattern Recognition**: The model predicts classification based exclusively on statistical linguistic patterns learned from the WELFake training dataset.
-- **No Factual Verification**: A prediction of `LIKELY REAL NEWS` does **not** guarantee objective factual truth.
-- **No Independent Fact-Checking**: A prediction of `LIKELY FAKE NEWS` does **not** constitute independent fact-checking or journalistic verification.
-- **Model Confidence Score**: The `confidence` value is a transformed SVM decision-margin score ($100 \times (1 - e^{-|\text{margin}|})$) and is **not** a calibrated probability.
-- **Local Application**: Cloud deployment has not been performed; the system runs strictly in your local environment.
+### Prerequisites
+- Python 3.10+
+- Node.js 18+ and npm
+
+### 1. Backend Setup
+From the project root:
+
+```bash
+# Install Python dependencies
+pip install -r backend/requirements.txt
+
+# Start the FastAPI backend server
+python3 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8008 --reload
+```
+
+### 2. Frontend Setup
+In a new terminal window:
+
+```bash
+# Navigate to the frontend directory
+cd frontend
+
+# Install Node dependencies
+npm install
+
+# Start the React Vite dev server
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser.
+
+> **Note:** Production model artifacts (`backend/models/*.joblib`) and datasets (`backend/data/*.csv`) are intentionally excluded from Git tracking via `.gitignore` and must exist locally for the application workflow.
+
+---
+
+## Limitations & Disclaimers
+
+- **Dataset Dependence**: Model predictions reflect statistical linguistic patterns learned from the WELFake dataset and may not generalize to all news domains or emerging topics.
+- **Statistical Prediction**: The model predicts pattern similarity and does **not** independently verify facts, perform journalistic investigation, or guarantee objective truth.
+- **Error Margin**: Like all machine learning models, predictions can be incorrect.
+- **Uncalibrated Confidence Score**: Model confidence is derived from an SVM decision margin and is **not** a calibrated probability.
+- **Dataset Coverage**: The WELFake dataset contains historical news data and may not capture current events or evolving misinformation formats.
+
+---
+
+## Future Deployment
+
+Cloud deployment (e.g., Render for FastAPI backend, Vercel for React frontend, or containerization with Docker) can be added in future iterations. Currently, the application is configured for local production-like simulation.

@@ -17,11 +17,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for local React development
+# Enable CORS for local React development and production simulation
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
