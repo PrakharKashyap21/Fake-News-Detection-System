@@ -36,8 +36,8 @@ class EvidenceItem(BaseModel):
     title: str
     snippet: str
     publish_date: Optional[str] = None
-    credibility_score: float = Field(ge=0.0, le=1.0)
-    relevance_score: float = Field(ge=0.0, le=1.0)
+    credibility_score: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    relevance_score: Optional[float] = Field(default=None, ge=0.0, le=1.0)
     stance: StanceType
     raw_rating: Optional[str] = None
 
