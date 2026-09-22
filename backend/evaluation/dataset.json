@@ -1,0 +1,249 @@
+[
+  {
+    "case_id": "real_01",
+    "category": "KNOWN REAL CLAIMS",
+    "title": "NASA Perseverance Rover Finds Organic Compounds on Mars",
+    "text": "NASA's Perseverance rover detected organic molecules containing carbon inside the Jezero Crater on Mars, suggesting potential past habitability.",
+    "expected_evidence_state": "LIVE_NEWS_FOUND",
+    "expected_verdict": "SUPPORTED",
+    "source_reference": "https://www.nasa.gov/press-release/nasa-s-perseverance-rover-finds-organic-compounds-in-mars-crater",
+    "notes": "Verified scientific announcement covered across major science news outlets."
+  },
+  {
+    "case_id": "real_02",
+    "category": "KNOWN REAL CLAIMS",
+    "title": "James Webb Space Telescope Captures Deepest Infrared Image of Universe",
+    "text": "The James Webb Space Telescope produced the deepest and sharpest infrared image of the distant universe to date, known as Webb's First Deep Field.",
+    "expected_evidence_state": "BOTH_FOUND",
+    "expected_verdict": "SUPPORTED",
+    "source_reference": "https://www.nasa.gov/image-feature/goddard/2022/nasa-s-webb-delivers-deepest-infrared-image-of-unfolding-universe",
+    "notes": "High profile astronomy breakthrough widely reported globally."
+  },
+  {
+    "case_id": "real_03",
+    "category": "KNOWN REAL CLAIMS",
+    "title": "WHO Declares End to COVID-19 Global Health Emergency",
+    "text": "The World Health Organization declared that COVID-19 no longer constitutes a global health emergency of international concern.",
+    "expected_evidence_state": "BOTH_FOUND",
+    "expected_verdict": "SUPPORTED",
+    "source_reference": "https://www.who.int/news/item/05-05-2023-statement-on-the-fifteenth-meeting-of-the-international-health-regulations-(2005)-emergency-committee-regarding-the-coronavirus-disease-(covid-19)-pandemic",
+    "notes": "Official public health announcement from May 2023."
+  },
+
+  {
+    "case_id": "false_01",
+    "category": "KNOWN FALSE CLAIMS",
+    "title": "Pope Francis Wears Puffer Jacket in Viral Vatican Photo",
+    "text": "A photograph showing Pope Francis wearing a stylish white designer puffer coat went viral on social media, claiming to show his new papal wardrobe.",
+    "expected_evidence_state": "FACT_CHECK_FOUND",
+    "expected_verdict": "CONTRADICTED",
+    "source_reference": "https://www.snopes.com/fact-check/pope-francis-puffer-jacket/",
+    "notes": "Infamous Midjourney AI-generated image fact-checked as false by Snopes."
+  },
+  {
+    "case_id": "false_02",
+    "category": "KNOWN FALSE CLAIMS",
+    "title": "NASA Confirms Earth Will Experience 15 Days of Total Darkness",
+    "text": "NASA issued a report warning that Earth will experience 15 days of total darkness due to an astronomical alignment between Venus and Jupiter.",
+    "expected_evidence_state": "FACT_CHECK_FOUND",
+    "expected_verdict": "CONTRADICTED",
+    "source_reference": "https://www.snopes.com/fact-check/15-days-of-darkness/",
+    "notes": "Recurring viral hoax thoroughly debunked by multiple fact-checkers."
+  },
+  {
+    "case_id": "false_03",
+    "category": "KNOWN FALSE CLAIMS",
+    "title": "Drinking Lemon Water Cures All Stages of Cancer",
+    "text": "Medical researchers discovered that drinking warm lemon water with baking soda destroys cancer cells 10,000 times more effectively than chemotherapy.",
+    "expected_evidence_state": "FACT_CHECK_FOUND",
+    "expected_verdict": "CONTRADICTED",
+    "source_reference": "https://www.politifact.com/factchecks/2019/oct/22/facebook-posts/no-lemon-juice-not-10000-times-stronger-chemother/",
+    "notes": "Dangerous medical misinformation debunked by PolitiFact and FactCheck.org."
+  },
+
+  {
+    "case_id": "fc_01",
+    "category": "FACT-CHECKED CLAIMS",
+    "title": "5G Cell Towers Spread Coronavirus Pandemic",
+    "text": "Wireless 5G mobile towers emit electromagnetic radiation that weakens human immune systems and transmits the novel coronavirus.",
+    "expected_evidence_state": "FACT_CHECK_FOUND",
+    "expected_verdict": "CONTRADICTED",
+    "source_reference": "https://www.factcheck.org/2020/04/no-link-between-5g-and-coronavirus/",
+    "notes": "Widely indexed COVID-19 conspiracy debunked in Fact Check API databases."
+  },
+  {
+    "case_id": "fc_02",
+    "category": "FACT-CHECKED CLAIMS",
+    "title": "Great Wall of China is Visible From Space with Naked Eye",
+    "text": "Astronauts aboard the International Space Station confirm that the Great Wall of China is the only man-made structure visible from orbit without aid.",
+    "expected_evidence_state": "FACT_CHECK_FOUND",
+    "expected_verdict": "CONTRADICTED",
+    "source_reference": "https://www.nasa.gov/vision/space/workinginspace/great_wall.html",
+    "notes": "Classic misconception debunked by NASA and Snopes."
+  },
+  {
+    "case_id": "fc_03",
+    "category": "FACT-CHECKED CLAIMS",
+    "title": "Bananas Contain Poisonous Chemical Added by Cartels",
+    "text": "FDA issues urgent recall after imported bananas were found injected with toxic chemicals by international drug cartels.",
+    "expected_evidence_state": "FACT_CHECK_FOUND",
+    "expected_verdict": "CONTRADICTED",
+    "source_reference": "https://www.snopes.com/fact-check/banana-poisoning-warning/",
+    "notes": "Food safety panic rumor debunked by Snopes."
+  },
+
+  {
+    "case_id": "news_01",
+    "category": "CURRENT NEWS CLAIMS",
+    "title": "Federal Reserve Adjusts Interest Rates Amid Inflation Data",
+    "text": "The US Federal Reserve announced adjustments to benchmark interest rates following the latest inflation and employment figures.",
+    "expected_evidence_state": "LIVE_NEWS_FOUND",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "https://www.reuters.com/markets/us/fed-rate-decision",
+    "notes": "Live financial news coverage expected in GDELT. Neutral coverage yields UNVERIFIED context."
+  },
+  {
+    "case_id": "news_02",
+    "category": "CURRENT NEWS CLAIMS",
+    "title": "Global Climate Summit Reaches Accord on Emission Targets",
+    "text": "Delegates at the international climate conference signed a treaty committing countries to reduce carbon emissions by 2030.",
+    "expected_evidence_state": "LIVE_NEWS_FOUND",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "https://www.bbc.com/news/science-environment",
+    "notes": "Environmental news context in GDELT."
+  },
+  {
+    "case_id": "news_03",
+    "category": "CURRENT NEWS CLAIMS",
+    "title": "Tech Giants Announce New Artificial Intelligence Infrastructure Investments",
+    "text": "Major technology companies announced multi-billion dollar investments into data centers and artificial intelligence computing infrastructure.",
+    "expected_evidence_state": "LIVE_NEWS_FOUND",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "https://www.bloomberg.com/technology",
+    "notes": "Ongoing tech industry reporting."
+  },
+
+  {
+    "case_id": "synth_01",
+    "category": "REALISTIC SYNTHETIC FALSE CLAIMS",
+    "title": "European Union Mandates Microchip Implants for All Citizens by 2027",
+    "text": "BRUSSELS — In a landmark legislative vote, the European Parliament passed a directive requiring mandatory digital ID microchip implants for EU residents to access banking services.",
+    "expected_evidence_state": "FACT_CHECK_FOUND",
+    "expected_verdict": "CONTRADICTED",
+    "source_reference": "https://fullfact.org/online/eu-mandatory-microchip-claim/",
+    "notes": "Formal journalistic phrasing designed to fool text-only SVM style classifiers; V2 must rely on fact checks."
+  },
+  {
+    "case_id": "synth_02",
+    "category": "REALISTIC SYNTHETIC FALSE CLAIMS",
+    "title": "Stanford Study Disproves Global Warming Using Satellite Microwave Data",
+    "text": "PALO ALTO — A peer-reviewed study from Stanford University climate scientists concluded that global atmospheric temperatures have remained completely stable over the past 50 years.",
+    "expected_evidence_state": "FACT_CHECK_FOUND",
+    "expected_verdict": "CONTRADICTED",
+    "source_reference": "https://www.climatefeedback.org/claimcheck/stanford-study-global-warming/",
+    "notes": "Academic-styled false claim intended to test SVM vs evidence retrieval."
+  },
+  {
+    "case_id": "synth_03",
+    "category": "REALISTIC SYNTHETIC FALSE CLAIMS",
+    "title": "Bank of England Imposes Immediate 100% Tax on Cryptocurrency Transfers",
+    "text": "LONDON — Financial regulators at the Bank of England enacted emergency regulations imposing a 100 percent tax on all digital asset sales starting midnight.",
+    "expected_evidence_state": "FACT_CHECK_FOUND",
+    "expected_verdict": "CONTRADICTED",
+    "source_reference": "https://reuters.com/fact-check/boe-crypto-tax",
+    "notes": "Authoritative headline style to evaluate evidence-based vs linguistic-based classification."
+  },
+
+  {
+    "case_id": "unver_01",
+    "category": "UNVERIFIED / LOW-EVIDENCE CLAIMS",
+    "title": "Local Artisan Bakery in Small Town Wins Regional Bread Competition",
+    "text": "The Elmwood Village Bakery took home first place at the tri-county baking festival for their sourdough loaf.",
+    "expected_evidence_state": "NO_EVIDENCE",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "Local unindexed event reference",
+    "notes": "Obscure local claim with no national news or fact check coverage."
+  },
+  {
+    "case_id": "unver_02",
+    "category": "UNVERIFIED / LOW-EVIDENCE CLAIMS",
+    "title": "Mysterious Blue Spheres Fall Over Uninhabited Desert Valley",
+    "text": "Residents near a remote desert canyon reported seeing small gelatinous blue spheres scattered across sand dunes overnight.",
+    "expected_evidence_state": "NO_EVIDENCE",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "Arbitrary novel rumor scenario",
+    "notes": "Niche unindexed claim testing correct UNVERIFIED fallback."
+  },
+  {
+    "case_id": "unver_03",
+    "category": "UNVERIFIED / LOW-EVIDENCE CLAIMS",
+    "title": "Amateur Astronomer Discovers Unmapped Asteroid in Backyard Telescope",
+    "text": "High school physics teacher John Miller claims to have charted a near-Earth asteroid using a home observatory setup.",
+    "expected_evidence_state": "NO_EVIDENCE",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "Personal anecdotal claim",
+    "notes": "Low-evidence scenario testing high uncertainty response."
+  },
+
+  {
+    "case_id": "conflict_01",
+    "category": "CONFLICTING-EVIDENCE CASES",
+    "title": "Controversial Dietary Supplement Improves Memory in Clinical Trial",
+    "text": "A controversial herbal extract was reported to improve memory scores in a preliminary trial, while independent medical boards disputed the findings as unproven.",
+    "expected_evidence_state": "CONFLICTING",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "Medical dispute literature",
+    "notes": "Conflicting evidence scenario where supporting and contradicting sources exist."
+  },
+  {
+    "case_id": "conflict_02",
+    "category": "CONFLICTING-EVIDENCE CASES",
+    "title": "Disputed Historical Artifact Discovered in Archeological Dig",
+    "text": "Researchers claimed to discover an ancient inscribed tablet, but opposing archeologists published papers asserting the artifact is a modern forgery.",
+    "expected_evidence_state": "CONFLICTING",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "Academic controversy literature",
+    "notes": "Testing conflict detection flag when opposing evidence coexists."
+  },
+  {
+    "case_id": "conflict_03",
+    "category": "CONFLICTING-EVIDENCE CASES",
+    "title": "Economic Report Claiming Universal Basic Income Reduces Employment",
+    "text": "One economic institute published data claiming municipal basic income pilot programs decreased worker participation, while a university study concluded employment increased.",
+    "expected_evidence_state": "CONFLICTING",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "Economic policy research debate",
+    "notes": "Controversial policy topic with conflicting studies."
+  },
+
+  {
+    "case_id": "multi_01",
+    "category": "MULTI-CLAIM ARTICLES",
+    "title": "Space Breakthroughs and Viral Hoaxes",
+    "text": "NASA's James Webb Space Telescope produced the deepest infrared image of the distant universe. Meanwhile, viral social media posts falsely claimed Earth will experience 15 days of total darkness.",
+    "expected_evidence_state": "BOTH_FOUND",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "Combined test case (Real astronomy + False darkness hoax)",
+    "notes": "Article with 1 supported claim and 1 contradicted claim. Overall assessment must be UNVERIFIED with has_conflict=True."
+  },
+  {
+    "case_id": "multi_02",
+    "category": "MULTI-CLAIM ARTICLES",
+    "title": "Global Health Update",
+    "text": "The World Health Organization declared that COVID-19 no longer constitutes a global health emergency. Separately, internet rumors claimed drinking lemon water cures cancer.",
+    "expected_evidence_state": "BOTH_FOUND",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "Combined test case (Real WHO announcement + False lemon cancer cure)",
+    "notes": "Multi-claim article testing mixed verdict synthesis."
+  },
+  {
+    "case_id": "multi_03",
+    "category": "MULTI-CLAIM ARTICLES",
+    "title": "Technology and Microchips",
+    "text": "Major technology companies announced multi-billion dollar investments into artificial intelligence data centers. In addition, false posts alleged the EU passed a law requiring microchip implants.",
+    "expected_evidence_state": "BOTH_FOUND",
+    "expected_verdict": "UNVERIFIED",
+    "source_reference": "Combined test case (Real tech news + False EU microchip hoax)",
+    "notes": "Multi-claim article with news context and contradicted claim."
+  }
+]

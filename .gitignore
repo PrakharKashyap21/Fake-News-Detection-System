@@ -47,3 +47,7 @@ frontend/dist-ssr/
 
 # Logs
 *.log
+
+# Evaluation outputs
+backend/evaluation/results.json
+backend/evaluation/results_mock.json

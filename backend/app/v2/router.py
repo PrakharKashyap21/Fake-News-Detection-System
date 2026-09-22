@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from backend.app.v2.schemas import VerificationRequest, VerificationResponse
 from backend.app.v2.verification_service import get_verification_service, VerificationService
 
@@ -6,10 +6,10 @@ router = APIRouter(prefix="/v2", tags=["V2 Verification"])
 
 
 @router.post("/verify", response_model=VerificationResponse)
-def verify_news_v2(payload: VerificationRequest):
+def verify_news_v2(payload: VerificationRequest, service: VerificationService = Depends(get_verification_service)):
     try:
-        service: VerificationService = get_verification_service()
         return service.verify_news(payload)
+
     except ValueError as ve:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
