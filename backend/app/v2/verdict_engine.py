@@ -1,0 +1,89 @@
+from typing import List, Optional
+from backend.app.v2.schemas import (
+    ExtractedClaim,
+    EvidenceItem,
+    ClaimEvidenceSummary,
+    ClaimVerdict,
+    ClaimVerificationResult
+)
+from backend.app.v2.evidence_aggregator import get_evidence_aggregator, EvidenceAggregator
+
+
+class VerdictEngine:
+    """Deterministic, transparent claim verification engine."""
+
+    def __init__(self, aggregator: Optional[EvidenceAggregator] = None):
+        self.aggregator = aggregator or get_evidence_aggregator()
+
+    def verify_summary(self, summary: ClaimEvidenceSummary) -> ClaimVerificationResult:
+        """Determines the claim verdict and reasoning directly from a Stage 21 ClaimEvidenceSummary."""
+        claim_id = summary.claim_id if summary and summary.claim_id else "unknown_claim"
+        supp_count = summary.supporting_evidence_count if summary else 0
+        contra_count = summary.contradicting_evidence_count if summary else 0
+        neut_count = summary.neutral_evidence_count if summary else 0
+
+        # Rule 4: Both supporting and contradicting evidence exist
+        if supp_count > 0 and contra_count > 0:
+            return ClaimVerificationResult(
+                claim_id=claim_id,
+                verdict=ClaimVerdict.UNVERIFIED,
+                supporting_evidence_count=supp_count,
+                contradicting_evidence_count=contra_count,
+                neutral_evidence_count=neut_count,
+                has_conflicting_evidence=True,
+                reasoning="Supporting and contradicting evidence were both found; the claim is unverified."
+            )
+
+        # Rule 2: Supporting fact-check evidence exists, no contradicting evidence
+        if supp_count > 0 and contra_count == 0:
+            return ClaimVerificationResult(
+                claim_id=claim_id,
+                verdict=ClaimVerdict.SUPPORTED,
+                supporting_evidence_count=supp_count,
+                contradicting_evidence_count=contra_count,
+                neutral_evidence_count=neut_count,
+                has_conflicting_evidence=False,
+                reasoning="Supporting fact-check evidence was found with no contradicting evidence."
+            )
+
+        # Rule 3: Contradicting fact-check evidence exists, no supporting evidence
+        if contra_count > 0 and supp_count == 0:
+            return ClaimVerificationResult(
+                claim_id=claim_id,
+                verdict=ClaimVerdict.CONTRADICTED,
+                supporting_evidence_count=supp_count,
+                contradicting_evidence_count=contra_count,
+                neutral_evidence_count=neut_count,
+                has_conflicting_evidence=False,
+                reasoning="Contradicting fact-check evidence was found with no supporting evidence."
+            )
+
+        # Rule 1, 5, 6: No supporting or contradicting evidence found
+        return ClaimVerificationResult(
+            claim_id=claim_id,
+            verdict=ClaimVerdict.UNVERIFIED,
+            supporting_evidence_count=supp_count,
+            contradicting_evidence_count=contra_count,
+            neutral_evidence_count=neut_count,
+            has_conflicting_evidence=False,
+            reasoning="No supporting or contradicting evidence was found."
+        )
+
+    def verify_claim(
+        self,
+        claim: ExtractedClaim,
+        evidence_items: Optional[List[EvidenceItem]] = None
+    ) -> ClaimVerificationResult:
+        """Aggregates evidence for an ExtractedClaim and evaluates its verdict."""
+        summary = self.aggregator.aggregate_evidence(claim, evidence_items)
+        return self.verify_summary(summary)
+
+
+_verdict_engine_instance = None
+
+
+def get_verdict_engine() -> VerdictEngine:
+    global _verdict_engine_instance
+    if _verdict_engine_instance is None:
+        _verdict_engine_instance = VerdictEngine()
+    return _verdict_engine_instance

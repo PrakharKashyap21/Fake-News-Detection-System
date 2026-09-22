@@ -105,3 +105,14 @@ class ClaimEvidenceSummary(BaseModel):
     live_news_evidence: List[EvidenceItem] = Field(default_factory=list)
     all_evidence: List[EvidenceItem] = Field(default_factory=list)
 
+
+class ClaimVerificationResult(BaseModel):
+    claim_id: str
+    verdict: ClaimVerdict
+    supporting_evidence_count: int = 0
+    contradicting_evidence_count: int = 0
+    neutral_evidence_count: int = 0
+    has_conflicting_evidence: bool = False
+    reasoning: str
+
+
