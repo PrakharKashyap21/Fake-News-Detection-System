@@ -114,5 +114,7 @@ class ClaimVerificationResult(BaseModel):
     neutral_evidence_count: int = 0
     has_conflicting_evidence: bool = False
     reasoning: str
+    linguistic_signal: Optional[LinguisticSignal] = None
+
 
 
