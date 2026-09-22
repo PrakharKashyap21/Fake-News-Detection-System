@@ -86,3 +86,22 @@ class VerificationResponse(BaseModel):
         "Verification is based on aggregated live news and fact-check sources. "
         "UNVERIFIED claims do not imply falsity, but rather an absence of conclusive external reporting."
     )
+
+
+class ClaimEvidenceSummary(BaseModel):
+    claim_id: str
+    claim_text: str
+    total_evidence_count: int = 0
+    fact_check_count: int = 0
+    live_news_count: int = 0
+    supporting_evidence_count: int = 0
+    contradicting_evidence_count: int = 0
+    neutral_evidence_count: int = 0
+    unique_source_domains: List[str] = Field(default_factory=list)
+    unique_domain_count: int = 0
+    most_recent_evidence_timestamp: Optional[str] = None
+    has_conflicting_evidence: bool = False
+    fact_check_evidence: List[EvidenceItem] = Field(default_factory=list)
+    live_news_evidence: List[EvidenceItem] = Field(default_factory=list)
+    all_evidence: List[EvidenceItem] = Field(default_factory=list)
+
