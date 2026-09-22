@@ -63,6 +63,8 @@ class SVMPipelineIntegrator:
             neutral_evidence_count=result.neutral_evidence_count,  # Un-modified
             has_conflicting_evidence=result.has_conflicting_evidence,  # Un-modified
             reasoning=result.reasoning,  # Un-modified
+            evidence_strength=result.evidence_strength,  # Un-modified
+            uncertainty_level=result.uncertainty_level,  # Un-modified
             linguistic_signal=signal
         )
 

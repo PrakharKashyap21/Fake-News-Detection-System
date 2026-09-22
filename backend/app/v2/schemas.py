@@ -106,6 +106,19 @@ class ClaimEvidenceSummary(BaseModel):
     all_evidence: List[EvidenceItem] = Field(default_factory=list)
 
 
+class EvidenceStrength(str, Enum):
+    NONE = "NONE"
+    LIMITED = "LIMITED"
+    MODERATE = "MODERATE"
+    STRONG = "STRONG"
+
+
+class UncertaintyLevel(str, Enum):
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
+
+
 class ClaimVerificationResult(BaseModel):
     claim_id: str
     verdict: ClaimVerdict
@@ -114,7 +127,10 @@ class ClaimVerificationResult(BaseModel):
     neutral_evidence_count: int = 0
     has_conflicting_evidence: bool = False
     reasoning: str
+    evidence_strength: EvidenceStrength = EvidenceStrength.NONE
+    uncertainty_level: UncertaintyLevel = UncertaintyLevel.HIGH
     linguistic_signal: Optional[LinguisticSignal] = None
+
 
 
 
