@@ -10,6 +10,8 @@ from backend.app.v2.schemas import (
     EvidenceSourceType,
     StanceType
 )
+from backend.app.v2.query_builder import get_query_builder, FactCheckQueryBuilder
+
 
 
 class FactCheckAPIKeyError(ValueError):
@@ -86,44 +88,65 @@ def extract_domain_from_url(url: str, fallback_site: Optional[str] = None) -> st
 
 
 class GoogleFactCheckRetriever:
+
     """Adapter/Provider for querying Google Fact Check Tools Claim Search API
 
-    and normalizing evidence into V2 EvidenceItem models.
+    and normalizing evidence into V2 EvidenceItem models with deterministic query refinement.
     """
 
     BASE_URL = "https://factchecktools.googleapis.com/v1alpha1/claims:search"
 
-    def __init__(self, api_key: Optional[str] = None, mock_mode: bool = False):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        mock_mode: bool = False,
+        query_builder: Optional[FactCheckQueryBuilder] = None
+    ):
         self.api_key = api_key or os.environ.get("GOOGLE_FACT_CHECK_API_KEY", "")
         self.mock_mode = mock_mode
-
-    def _normalize_claim_query(self, claim: ExtractedClaim) -> str:
-        """Constructs an optimal query string from claim text or keywords."""
-        if not claim or not claim.text:
-            return ""
-        text_clean = str(claim.text).strip()
-        # Truncate overly long query strings to avoid HTTP request length issues
-        if len(text_clean) > 200:
-            text_clean = text_clean[:200].rsplit(" ", 1)[0]
-        return text_clean
+        self.query_builder = query_builder or get_query_builder()
+        self.api_call_count = 0  # Track API call count per claim for testing bounds
 
     def search_claim(self, claim: ExtractedClaim) -> List[EvidenceItem]:
-        """Queries fact-check data for an extracted claim and returns normalized EvidenceItem list."""
+        """Queries fact-check data for an extracted claim with bounded primary and fallback query attempts."""
         if not claim or not claim.text:
             return []
 
-        query = self._normalize_claim_query(claim)
-        if not query:
-            return []
+        self.api_call_count = 0
 
         if self.mock_mode:
-            return self._get_mock_evidence(claim)
+            raw_mock = self._get_mock_evidence(claim)
+            return self.query_builder.filter_relevant_evidence(claim, raw_mock)
 
         if not self.api_key:
             raise FactCheckAPIKeyError(
                 "GOOGLE_FACT_CHECK_API_KEY environment variable is missing or empty. "
                 "Set GOOGLE_FACT_CHECK_API_KEY or enable mock_mode=True for offline testing."
             )
+
+        # Primary Query Attempt (Call 1)
+        primary_query = self.query_builder.build_primary_query(claim)
+        evidence_items = []
+
+        if primary_query:
+            evidence_items = self._execute_search_query(primary_query, claim)
+
+        # Fallback Query Attempt (Call 2 - ONLY if Primary Query returned zero evidence)
+        if not evidence_items:
+            fallback_query = self.query_builder.build_fallback_query(claim)
+            if fallback_query and fallback_query.lower() != primary_query.lower():
+                evidence_items = self._execute_search_query(fallback_query, claim)
+
+        # Lexical relevance filtering
+        filtered_items = self.query_builder.filter_relevant_evidence(claim, evidence_items)
+        return filtered_items
+
+    def _execute_search_query(self, query: str, claim: ExtractedClaim) -> List[EvidenceItem]:
+        """Executes a single HTTP search query against the Google Fact Check API."""
+        if not query or not self.api_key:
+            return []
+
+        self.api_call_count += 1
 
         params = {
             "query": query,
@@ -158,6 +181,7 @@ class GoogleFactCheckRetriever:
             raise FactCheckAPIError(http_err.code, error_body or http_err.reason) from http_err
         except urllib.error.URLError as url_err:
             raise FactCheckAPIError(503, f"Network/URL error: {url_err.reason}") from url_err
+
 
     def _normalize_response(self, data: Any, claim: ExtractedClaim) -> List[EvidenceItem]:
         """Normalizes raw Google API response payload into EvidenceItem list."""
