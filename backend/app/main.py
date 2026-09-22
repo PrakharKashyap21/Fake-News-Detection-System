@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.schemas import PredictionRequest, PredictionResponse
 from backend.app.predictor import get_predictor, NewsPredictor
+from backend.app.v2.router import router as v2_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -11,9 +12,9 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(
-    title="Fake News Detection API",
-    description="NLP and Machine Learning pipeline for fake news classification",
-    version="1.0.0",
+    title="Fake News Detection & Real-Time Verification API",
+    description="NLP and Machine Learning pipeline for fake news classification & V2 evidence verification",
+    version="2.0.0",
     lifespan=lifespan
 )
 
@@ -24,6 +25,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register V2 verification endpoints
+app.include_router(v2_router)
+app.include_router(v2_router, prefix="/api")
 
 @app.get("/", tags=["General"])
 def read_root():

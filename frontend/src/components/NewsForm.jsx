@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const NewsForm = ({ onSubmit, isLoading, validationError, setValidationError }) => {
+const NewsForm = ({ onSubmit, isLoading, validationError, setValidationError, submitLabel = "Detect News" }) => {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
 
@@ -74,11 +74,12 @@ const NewsForm = ({ onSubmit, isLoading, validationError, setValidationError }) 
             <span>Analyzing...</span>
           </>
         ) : (
-          "Detect News"
+          submitLabel
         )}
       </button>
     </form>
   );
 };
+
 
 export default NewsForm;

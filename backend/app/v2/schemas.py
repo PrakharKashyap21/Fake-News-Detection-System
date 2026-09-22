@@ -75,17 +75,17 @@ class VerificationRequest(BaseModel):
         return self
 
 
-class VerificationResponse(BaseModel):
-    overall_assessment: OverallAssessment
-    assessment_summary: str
-    confidence_score: float
-    has_conflict: bool
-    claims: List[ExtractedClaim]
-    linguistic_signal: Optional[LinguisticSignal] = None
-    disclaimer: str = (
-        "Verification is based on aggregated live news and fact-check sources. "
-        "UNVERIFIED claims do not imply falsity, but rather an absence of conclusive external reporting."
-    )
+class EvidenceStrength(str, Enum):
+    NONE = "NONE"
+    LIMITED = "LIMITED"
+    MODERATE = "MODERATE"
+    STRONG = "STRONG"
+
+
+class UncertaintyLevel(str, Enum):
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
 
 
 class ClaimEvidenceSummary(BaseModel):
@@ -106,17 +106,34 @@ class ClaimEvidenceSummary(BaseModel):
     all_evidence: List[EvidenceItem] = Field(default_factory=list)
 
 
-class EvidenceStrength(str, Enum):
-    NONE = "NONE"
-    LIMITED = "LIMITED"
-    MODERATE = "MODERATE"
-    STRONG = "STRONG"
+class ClaimVerificationDetail(BaseModel):
+    claim_id: str
+    text: str
+    verdict: ClaimVerdict
+    reasoning: str
+    evidence_strength: EvidenceStrength
+    uncertainty_level: UncertaintyLevel
+    has_conflicting_evidence: bool
+    supporting_evidence_count: int = 0
+    contradicting_evidence_count: int = 0
+    neutral_evidence_count: int = 0
+    keywords: List[str] = Field(default_factory=list)
+    evidence_summary: Optional[ClaimEvidenceSummary] = None
+    evidence: List[EvidenceItem] = Field(default_factory=list)
+    linguistic_signal: Optional[LinguisticSignal] = None
 
 
-class UncertaintyLevel(str, Enum):
-    HIGH = "HIGH"
-    MEDIUM = "MEDIUM"
-    LOW = "LOW"
+class VerificationResponse(BaseModel):
+    overall_assessment: OverallAssessment
+    assessment_summary: str
+    has_conflict: bool
+    claims: List[ClaimVerificationDetail]
+    linguistic_signal: Optional[LinguisticSignal] = None
+    service_status: dict = Field(default_factory=dict)
+    disclaimer: str = (
+        "Verification is based on aggregated live news and fact-check sources. "
+        "UNVERIFIED claims do not imply falsity, but rather an absence of conclusive external reporting."
+    )
 
 
 class ClaimVerificationResult(BaseModel):
@@ -130,6 +147,7 @@ class ClaimVerificationResult(BaseModel):
     evidence_strength: EvidenceStrength = EvidenceStrength.NONE
     uncertainty_level: UncertaintyLevel = UncertaintyLevel.HIGH
     linguistic_signal: Optional[LinguisticSignal] = None
+
 
 
 
