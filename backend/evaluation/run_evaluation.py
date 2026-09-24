@@ -220,11 +220,15 @@ def run_evaluation(mock_mode: bool = False):
         fc = c["failure_category"]
         failure_counts[fc] = failure_counts.get(fc, 0) + 1
 
+    evidence_relevant_cases = sum(1 for c in case_results if c["total_evidence_count"] > 0)
+    evidence_relevance_rate = round((evidence_relevant_cases / total_cases) * 100, 2)
+
     metrics = {
         "total_cases": total_cases,
         "claim_extraction_success_rate": extraction_success_rate,
         "fact_check_hit_rate": fact_check_hit_rate,
         "live_news_hit_rate": live_news_hit_rate,
+        "evidence_relevance_rate": evidence_relevance_rate,
         "verdict_coverage_rate": verdict_coverage_rate,
         "verdict_accuracy_rate": verdict_accuracy_rate,
         "unverified_rate": unverified_rate,
@@ -249,12 +253,13 @@ def run_evaluation(mock_mode: bool = False):
 
     # Print Console Summary
     print("\n" + "=" * 70)
-    print("STAGE 26 REAL-WORLD EVALUATION SUMMARY REPORT")
+    print("STAGE 28 REAL-WORLD EVALUATION SUMMARY REPORT")
     print("=" * 70)
     print(f"Total Evaluation Cases Tested:       {total_cases}")
     print(f"Claim Extraction Success Rate:       {extraction_success_rate}%")
     print(f"Fact-Check Retrieval Hit Rate:        {fact_check_hit_rate}%")
     print(f"Live-News Retrieval Hit Rate:         {live_news_hit_rate}%")
+    print(f"Evidence Relevance Rate:             {evidence_relevance_rate}%")
     print(f"Verdict Coverage Rate:               {verdict_coverage_rate}%")
     print(f"Ground-Truth Verdict Accuracy Rate:  {verdict_accuracy_rate}%")
     print(f"UNVERIFIED Assessment Rate:          {unverified_rate}%")
@@ -264,6 +269,7 @@ def run_evaluation(mock_mode: bool = False):
     print(f"Service Failure Count:               {service_failure_count}")
     print(f"Average Response Time:               {avg_response_time} ms")
     print(f"Median Response Time:                {median_response_time} ms")
+
     print("-" * 70)
     print("V1 SVM vs Ground-Truth Disagreements:")
     print(f"  Total Disagreements: {len(svm_disagreements)} cases ({', '.join(svm_disagreements)})")
