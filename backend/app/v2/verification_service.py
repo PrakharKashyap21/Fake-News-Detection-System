@@ -21,6 +21,7 @@ from backend.app.v2.news_retriever import (
 )
 from backend.app.v2.evidence_aggregator import get_evidence_aggregator, EvidenceAggregator
 from backend.app.v2.evidence_matcher import get_evidence_matcher, EvidenceMatcher
+from backend.app.v2.stance_analyzer import get_stance_analyzer, EvidenceStanceAnalyzer
 from backend.app.v2.verdict_engine import get_verdict_engine, VerdictEngine
 from backend.app.v2.svm_signal import get_svm_signal_provider, SVMSignalProvider, SVMPipelineIntegrator
 
@@ -28,7 +29,7 @@ from backend.app.v2.svm_signal import get_svm_signal_provider, SVMSignalProvider
 class VerificationService:
     """Orchestrates V2 verification workflow combining claim extraction, fact-check retrieval,
 
-    live news retrieval, evidence relevance matching, evidence aggregation, verdict evaluation, and SVM signals.
+    live news retrieval, evidence relevance matching, evidence stance analysis, evidence aggregation, verdict evaluation, and SVM signals.
     """
 
     def __init__(
@@ -37,6 +38,7 @@ class VerificationService:
         fc_retriever: Optional[GoogleFactCheckRetriever] = None,
         news_retriever: Optional[GDELTNewsRetriever] = None,
         evidence_matcher: Optional[EvidenceMatcher] = None,
+        stance_analyzer: Optional[EvidenceStanceAnalyzer] = None,
         aggregator: Optional[EvidenceAggregator] = None,
         verdict_engine: Optional[VerdictEngine] = None,
         svm_provider: Optional[SVMSignalProvider] = None,
@@ -46,6 +48,7 @@ class VerificationService:
         self.fc_retriever = fc_retriever or get_fact_check_retriever(mock_mode=mock_mode)
         self.news_retriever = news_retriever or get_news_retriever(mock_mode=mock_mode)
         self.evidence_matcher = evidence_matcher or get_evidence_matcher()
+        self.stance_analyzer = stance_analyzer or get_stance_analyzer()
         self.aggregator = aggregator or get_evidence_aggregator()
         self.verdict_engine = verdict_engine or get_verdict_engine()
         self.svm_provider = svm_provider or get_svm_signal_provider()
@@ -98,11 +101,14 @@ class VerificationService:
 
             combined_evidence = fc_evidence + news_evidence
 
-            # Evidence relevance & stance matching
+            # Evidence relevance matching
             matched_evidence = self.evidence_matcher.process_claim_evidence(claim, combined_evidence)
 
+            # Evidence stance analysis
+            analyzed_evidence = self.stance_analyzer.process_claim_evidence_stance(claim, matched_evidence)
+
             # Evidence aggregation
-            summary = self.aggregator.aggregate_evidence(claim, matched_evidence)
+            summary = self.aggregator.aggregate_evidence(claim, analyzed_evidence)
 
 
             # Claim verdict evaluation

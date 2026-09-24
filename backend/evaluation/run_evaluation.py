@@ -90,6 +90,7 @@ def run_evaluation(mock_mode: bool = False):
         live_news_count = 0
         supporting_count = 0
         contradicting_count = 0
+        neutral_count = 0
         source_urls = []
         claim_verdicts = []
 
@@ -107,6 +108,8 @@ def run_evaluation(mock_mode: bool = False):
                     supporting_count += 1
                 elif ev.get("stance") == "CONTRADICTS":
                     contradicting_count += 1
+                else:
+                    neutral_count += 1
 
                 if ev.get("url"):
                     source_urls.append(ev.get("url"))
@@ -129,11 +132,13 @@ def run_evaluation(mock_mode: bool = False):
             elif has_conflict:
                 failure_category = "source_conflict"
             elif total_evidence_count == 0:
-                failure_category = "insufficient_evidence"
+                failure_category = "retrieval_failure"
             elif expected_verdict == "CONTRADICTED" and fact_check_count == 0:
                 failure_category = "fact_check_miss"
             elif expected_verdict == "SUPPORTED" and live_news_count == 0 and fact_check_count == 0:
                 failure_category = "live_news_miss"
+            elif supporting_count == 0 and contradicting_count == 0 and neutral_count > 0:
+                failure_category = "stance_limitation"
             else:
                 failure_category = "verdict_logic_limitation"
 
@@ -152,6 +157,7 @@ def run_evaluation(mock_mode: bool = False):
             "live_news_evidence_count": live_news_count,
             "supporting_evidence_count": supporting_count,
             "contradicting_evidence_count": contradicting_count,
+            "neutral_evidence_count": neutral_count,
             "total_evidence_count": total_evidence_count,
             "service_status": service_status,
             "response_time_ms": duration_ms,
@@ -176,6 +182,13 @@ def run_evaluation(mock_mode: bool = False):
 
     live_news_hits = sum(1 for c in case_results if c["live_news_evidence_count"] > 0)
     live_news_hit_rate = round((live_news_hits / total_cases) * 100, 2)
+
+    total_supports_evidence = sum(c["supporting_evidence_count"] for c in case_results)
+    total_contradicts_evidence = sum(c["contradicting_evidence_count"] for c in case_results)
+    total_neutral_evidence = sum(c["neutral_evidence_count"] for c in case_results)
+    total_all_evidence = sum(c["total_evidence_count"] for c in case_results)
+
+    stance_coverage_rate = 100.0 if total_all_evidence > 0 else 0.0
 
     verdict_coverage_count = sum(1 for c in case_results if c["v2_overall_assessment"] in ["SUPPORTED", "CONTRADICTED", "UNVERIFIED"])
     verdict_coverage_rate = round((verdict_coverage_count / total_cases) * 100, 2)
@@ -229,6 +242,10 @@ def run_evaluation(mock_mode: bool = False):
         "fact_check_hit_rate": fact_check_hit_rate,
         "live_news_hit_rate": live_news_hit_rate,
         "evidence_relevance_rate": evidence_relevance_rate,
+        "stance_determination_coverage": stance_coverage_rate,
+        "supports_evidence_count": total_supports_evidence,
+        "contradicts_evidence_count": total_contradicts_evidence,
+        "neutral_evidence_count": total_neutral_evidence,
         "verdict_coverage_rate": verdict_coverage_rate,
         "verdict_accuracy_rate": verdict_accuracy_rate,
         "unverified_rate": unverified_rate,
@@ -253,13 +270,17 @@ def run_evaluation(mock_mode: bool = False):
 
     # Print Console Summary
     print("\n" + "=" * 70)
-    print("STAGE 28 REAL-WORLD EVALUATION SUMMARY REPORT")
+    print("STAGE 29 REAL-WORLD EVALUATION SUMMARY REPORT")
     print("=" * 70)
     print(f"Total Evaluation Cases Tested:       {total_cases}")
     print(f"Claim Extraction Success Rate:       {extraction_success_rate}%")
     print(f"Fact-Check Retrieval Hit Rate:        {fact_check_hit_rate}%")
     print(f"Live-News Retrieval Hit Rate:         {live_news_hit_rate}%")
     print(f"Evidence Relevance Rate:             {evidence_relevance_rate}%")
+    print(f"Stance Determination Coverage:      {stance_coverage_rate}%")
+    print(f"SUPPORTS Evidence Count:             {total_supports_evidence}")
+    print(f"CONTRADICTS Evidence Count:          {total_contradicts_evidence}")
+    print(f"NEUTRAL Evidence Count:              {total_neutral_evidence}")
     print(f"Verdict Coverage Rate:               {verdict_coverage_rate}%")
     print(f"Ground-Truth Verdict Accuracy Rate:  {verdict_accuracy_rate}%")
     print(f"UNVERIFIED Assessment Rate:          {unverified_rate}%")

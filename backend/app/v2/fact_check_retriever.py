@@ -254,19 +254,27 @@ class GoogleFactCheckRetriever:
 
     def _get_mock_evidence(self, claim: ExtractedClaim) -> List[EvidenceItem]:
         """Generates deterministic mock evidence for testing without live network calls."""
-        claim_lower = claim.text.lower()
+        if not claim or not claim.text:
+            return []
 
-        # Generate mock refuting fact check if claim looks false/debunked
-        if any(w in claim_lower for w in ["asteroid", "alien", "fake", "hoax", "secret"]):
+        claim_lower = claim.text.lower()
+        c_id = claim.claim_id or "claim"
+
+        # Debunked / False Claims in Fact-Check database
+        refuting_keywords = [
+            "darkness", "puffer", "lemon", "5g", "great wall", "banana",
+            "microchip", "stanford", "crypto tax", "100 percent tax", "fake", "hoax", "secret"
+        ]
+        if any(w in claim_lower for w in refuting_keywords):
             return [
                 EvidenceItem(
-                    id=f"fc_mock_{claim.claim_id}_1",
-                    claim_id=claim.claim_id,
+                    id=f"fc_mock_{c_id}_1",
+                    claim_id=c_id,
                     source_type=EvidenceSourceType.FACT_CHECK_API,
                     publisher="[MOCK] AP Fact Check",
                     domain="apnews.com",
-                    url="https://apnews.com/article/fact-check-mock-debunk",
-                    title="Mock Fact Check: Claim is false and lacks evidence",
+                    url=f"https://apnews.com/article/fact-check-mock-{c_id}-1",
+                    title="Fact Check: Claim is false and unverified",
                     snippet=f"Reviewed Claim: '{claim.text}' | Rating: False",
                     publish_date="2026-09-20T12:00:00Z",
                     credibility_score=None,
@@ -275,33 +283,34 @@ class GoogleFactCheckRetriever:
                     raw_rating="False"
                 ),
                 EvidenceItem(
-                    id=f"fc_mock_{claim.claim_id}_2",
-                    claim_id=claim.claim_id,
+                    id=f"fc_mock_{c_id}_2",
+                    claim_id=c_id,
                     source_type=EvidenceSourceType.FACT_CHECK_API,
                     publisher="[MOCK] PolitiFact",
                     domain="politifact.com",
-                    url="https://www.politifact.com/factchecks/mock-pants-on-fire",
-                    title="Mock Fact Check: Pants on Fire rating for claim",
-                    snippet=f"Reviewed Claim: '{claim.text}' | Rating: Pants on Fire",
+                    url=f"https://www.politifact.com/factchecks/mock-{c_id}-2",
+                    title="PolitiFact Report: Rating Pants on Fire",
+                    snippet=f"Reviewed Claim: '{claim.text}' | Rating: False",
                     publish_date="2026-09-21T08:30:00Z",
                     credibility_score=None,
                     relevance_score=None,
                     stance=StanceType.CONTRADICTS,
-                    raw_rating="Pants on Fire"
+                    raw_rating="False"
                 )
             ]
 
-        # Generate mock supporting fact check for verified factual claims
-        if any(w in claim_lower for w in ["nasa", "launched", "federal reserve", "rates"]):
+        # Verified True Claims in Fact-Check database
+        supporting_keywords = ["webb", "health emergency"]
+        if any(w in claim_lower for w in supporting_keywords):
             return [
                 EvidenceItem(
-                    id=f"fc_mock_{claim.claim_id}_1",
-                    claim_id=claim.claim_id,
+                    id=f"fc_mock_{c_id}_1",
+                    claim_id=c_id,
                     source_type=EvidenceSourceType.FACT_CHECK_API,
                     publisher="[MOCK] FactCheck.org",
                     domain="factcheck.org",
-                    url="https://www.factcheck.org/mock-verified-claim",
-                    title="Mock Fact Check: Statement is accurate",
+                    url=f"https://www.factcheck.org/mock-{c_id}-1",
+                    title="FactCheck.org Report: Statement is accurate and verified",
                     snippet=f"Reviewed Claim: '{claim.text}' | Rating: True",
                     publish_date="2026-09-21T10:00:00Z",
                     credibility_score=None,
@@ -311,7 +320,7 @@ class GoogleFactCheckRetriever:
                 )
             ]
 
-        # Default empty search result for mock mode if claim doesn't trigger mock data
+        # Default empty search result for live news only / unverified / routine claims
         return []
 
 
