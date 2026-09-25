@@ -1,237 +1,164 @@
-# Fake News Detection System
+# Real-Time News & Claim Verification System
 
-A machine-learning-based text classification application that predicts whether submitted news content resembles FAKE or REAL news based on statistical patterns learned from the WELFake dataset.
-
----
-
-## Overview
-
-The Fake News Detection System provides a streamlined machine learning pipeline and single-page web interface to analyze news headlines and body text. The system leverages Natural Language Processing (NLP) techniques and a Linear Support Vector Machine (LinearSVC) classifier to detect linguistic patterns associated with fake or real news.
-
-> **Note:** This application is a statistical pattern recognition system and is not an authoritative fact-checker or truth detector.
+A multi-stage news and claim verification system combining real-time external evidence retrieval (Google Fact Check Tools API, Live News) with relevance filtering, stance analysis, automated verdict synthesis, and auxiliary linguistic style classification.
 
 ---
 
-## Architecture
+## 1. Project Overview
+
+The **Real-Time News & Claim Verification System** is designed to evaluate the factual accuracy of news headlines and article claims against authoritative external evidence.
+
+While traditional machine learning approaches detect misinformation solely by identifying lexical or stylistic writing patterns, this system implements an evidence-first architecture: extracting key factual assertions, querying fact-checking databases and live news sources, evaluating evidence relevance and stance, and producing a grounded verdict (`SUPPORTED`, `CONTRADICTED`, or `UNVERIFIED`).
+
+---
+
+## 2. Evolution: V1 Linguistic Classifier to V2 Evidence Pipeline
+
+### V1 Architecture (Stylistic Text Classification)
+The initial V1 implementation was a standalone machine learning text classifier:
+- **Pipeline**: Text Preprocessing → TF-IDF Unigram/Bigram Vectorization → LinearSVC Classifier trained on the WELFake dataset (63,672 cleaned records).
+- **Function**: Detected statistical writing style patterns associated with fake vs. real news.
+
+### Why V2 Was Introduced
+Linguistic style is not a proxy for factual truth:
+- Fabricated claims or deliberate misinformation can be drafted in professional, formal journalistic prose.
+- Legitimate, breaking, or informal reporting may exhibit stylistic traits that a static text classifier flags as suspicious.
+- Static classifiers cannot verify dynamic real-world facts, ongoing events, or check claims against fact-checking publishers.
+
+To address these fundamental limitations, **V2** introduced a multi-source evidence verification pipeline. The V1 LinearSVC model was repurposed **strictly as an auxiliary linguistic signal** that provides stylistic context without determining truth.
+
+---
+
+## 3. Current V2 Verification Pipeline
+
+The V2 pipeline evaluates news claims across six sequential stages:
 
 ```
-Browser
-  ↓
-React + Vite
-  ↓
-Axios
-  ↓
-FastAPI
-  ↓
-TF-IDF Vectorizer
-  ↓
-LinearSVC Model
-  ↓
-JSON response
-  ↓
-React result card
+User Input (Headline & Article Text)
+  │
+  ▼
+1. Claim Extraction ──────────► Extracts core factual assertions & generates search queries
+  │
+  ▼
+2. Evidence Retrieval ────────► Queries Google Fact Check Tools API & Live News (GDELT)
+  │
+  ▼
+3. Relevance Matching ────────► Filters retrieved evidence by text similarity & keyword overlap
+  │
+  ▼
+4. Stance Analysis ───────────► Evaluates whether evidence SUPPORTS, CONTRADICTS, or is NEUTRAL
+  │
+  ▼
+5. Auxiliary Signals ─────────► Incorporates V1 LinearSVC linguistic signal as secondary context
+  │
+  ▼
+6. Verdict Engine ────────────► Synthesizes evidence & stance balance into final verdict
+  │
+  ▼
+Output: Final Verdict (SUPPORTED / CONTRADICTED / UNVERIFIED) + Evidence Details + Confidence
 ```
 
----
-
-## Features
-
-- **Headline & Article Classification**: Accepts optional headlines and article body text for prediction.
-- **TF-IDF Text Representation**: Extracts unigram and bigram features with sublinear term frequency scaling.
-- **Linear SVM Classification**: High-accuracy binary classification model optimized for high-dimensional sparse text data.
-- **FastAPI Backend API**: High-performance RESTful API endpoints with request validation and health monitoring.
-- **React Frontend**: Clean, responsive single-page user interface with real-time model confidence visualization.
-- **Decision Margin Confidence**: Derived directly from the SVM decision margin for model output interpretation.
-
----
-
-## Technology Stack
-
-- **Backend / Machine Learning**: Python 3.10+, Scikit-Learn, SciPy, NumPy, Pandas, Joblib, FastAPI, Uvicorn, Pydantic
-- **Frontend**: React 19, Vite, Axios, Vanilla CSS
-- **Dataset**: WELFake Dataset (Kaggle)
+### Pipeline Breakdown:
+1. **Claim Extraction**: Parses submitted text into discrete, verifiable factual claims and formulates search queries.
+2. **Fact-Check Retrieval**: Concurrently queries external providers:
+   - **Google Fact Check Tools API**: Retrieves published assessments from fact-checking publishers (Snopes, PolitiFact, Full Fact, BOOM, AFP, etc.).
+   - **Live News Retrieval (GDELT)**: Searches global news coverage for reporting context.
+3. **Evidence Relevance Matching**: Validates retrieved articles against the claim to filter out tangential or irrelevant search results.
+4. **Stance Analysis**: Maps fact-checker ratings and textual evidence into normalized stances: `SUPPORTS`, `CONTRADICTS`, or `NEUTRAL`.
+5. **Auxiliary Signals**: Incorporates the V1 LinearSVC linguistic signal as secondary context.
+6. **Verdict Engine**: Applies deterministic synthesis rules across evidence confidence, stance consensus, and conflict detection to output the final assessment.
 
 ---
 
-## Dataset & Preprocessing
+## 4. Verdict Types & Decision Logic
 
-- **Dataset**: WELFake Dataset (72,134 raw news records).
-- **Data Cleaning**:
-  - Removed non-content index column (`Unnamed: 0`).
-  - Safe text normalization (string conversion, whitespace trimming, and space folding).
-  - Combined headline and article body into a single `content` feature.
-  - Validated content and label availability (labels: `0 = FAKE`, `1 = REAL`).
-  - Removed 8,462 redundant exact duplicate content records prior to train/test split.
-  - Final Cleaned Dataset: **63,672 records** (34,789 FAKE / 54.64%, 28,883 REAL / 45.36%).
+The system outputs three mutually exclusive verdict categories:
 
----
+| Verdict | Meaning | Decision Criteria |
+|---|---|---|
+| **`SUPPORTED`** | Verified True | Strong, credible evidence or authoritative fact-checker consensus confirms the claim. |
+| **`CONTRADICTED`** | Verified False / Debunked | Authoritative fact-checkers or credible reporting directly refute or debunk the claim. |
+| **`UNVERIFIED`** | Inconclusive / Insufficient Evidence | No relevant external evidence was found, evidence is conflicting, or available sources lack consensus. Conservative default to prevent false assertions. |
 
-## Data Split
-
-- **Training Samples**: 50,937 samples (80%)
-- **Held-Out Test Samples**: 12,735 samples (20%)
-- **Split Strategy**: Stratified 80/20 train/test split (`random_state=42`).
-- **Data Leakage Validation**: **0 overlapping normalized content records** between training and testing sets.
+> **Role of V1 LinearSVC in V2:**
+> The V1 LinearSVC model serves **only as an auxiliary linguistic signal** in V2. It does **not** determine truth by itself, cannot overrule external evidence, and is never used as the sole basis for a `SUPPORTED` or `CONTRADICTED` verdict.
 
 ---
 
-## Machine Learning Pipeline
+## 5. Technology Stack
 
-- **Text Normalization**: Lowercased, unicode accent stripping, whitespace folded.
-- **TF-IDF Configuration**:
-  - `TfidfVectorizer(lowercase=True, strip_accents="unicode", ngram_range=(1, 2), min_df=3, max_df=0.95, sublinear_tf=True)`
-  - Vocabulary Size: **1,016,445 n-grams** (learned exclusively from training data).
-- **Classifier Configuration**:
-  - `LinearSVC(C=2.0, max_iter=5000, random_state=42)`
-
----
-
-## Model Selection & Optimization
-
-Model selection was conducted using **12 controlled hyperparameter and feature extraction experiments** on an internal 80/20 stratified validation split created exclusively from the training dataset.
-
-Candidate models evaluated during selection:
-- **Logistic Regression** (`C=1.0`): Validation Macro F1 = 0.9515
-- **Multinomial Naive Bayes** (`alpha=1.0`): Validation Macro F1 = 0.8424
-- **Linear Support Vector Machine** (`C=1.0`): Validation Macro F1 = 0.9715
-
-Following hyperparameter tuning across C parameters (0.5, 1.0, 2.0) and TF-IDF configurations, `LinearSVC` with `C=2.0` and `min_df=3` unigram+bigram TF-IDF yielded the top validation performance (Validation Macro F1: **0.9733**).
-
-> **Methodology Note:** The held-out test set was used only for final evaluation and was not used for model selection.
+- **Backend & Pipeline**: Python 3.10+, FastAPI, Pydantic, Requests, Uvicorn
+- **Machine Learning & NLP**: Scikit-Learn (LinearSVC, TfidfVectorizer), NumPy, SciPy, Pandas, Joblib
+- **External APIs**:
+  - Google Fact Check Tools Claim Search API
+  - GDELT DOC 2.0 API (Global Database of Events, Language, and Tone)
+- **Frontend**: React 19, Vite, Axios, Vanilla CSS (Glassmorphism design, responsive layouts)
+- **Testing & Evaluation**: Pytest, Custom Real-World Evaluation Framework
 
 ---
 
-## Final Production Model Results
+## 6. Evaluation & Benchmark Results
 
-The final production model was evaluated **exactly once** on the locked held-out test set (**12,735 samples**):
+### A. V1 In-Distribution Model Evaluation (Stylistic Classification)
+- **Dataset**: WELFake Dataset (12,735 held-out test samples).
+- **Held-Out Test Accuracy**: **97.38%** (Macro F1: 0.9736).
+- **Important Distinction**: The 97.38% accuracy belongs strictly to the **V1 in-distribution text-classification task** on a static dataset. It is **NOT** a factual-verification accuracy metric and does not reflect real-world fact-checking capability.
 
-### Overall Held-Out Test Metrics
-- **Accuracy**: **97.38%** (0.9738)
-- **Macro F1-Score**: **0.9736**
-- **Weighted F1-Score**: **0.9738**
-
-### Per-Class Performance Breakdown
-
-| Class | Label | Precision | Recall | F1-Score | Support |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **FAKE** | 0 | **97.82%** | **97.37%** | **0.9759** | 6,958 |
-| **REAL** | 1 | **96.85%** | **97.39%** | **0.9712** | 5,777 |
-
-### Confusion Matrix
-
-```
-             Predicted
-             FAKE   REAL
-
-Actual FAKE  6775    183
-Actual REAL   151   5626
-```
-
-- **True Negatives (Actual FAKE, Predicted FAKE)**: 6,775
-- **False Positives (Actual FAKE, Predicted REAL)**: 183
-- **False Negatives (Actual REAL, Predicted FAKE)**: 151
-- **True Positives (Actual REAL, Predicted REAL)**: 5,626
-
-> The held-out test set was used only for final evaluation and was not used for model selection.
+### B. V2 Real-World Benchmark Evaluation (Factual Verification)
+- **Benchmark Suite**: 64 real-world test cases across 8 diverse categories (established facts, viral hoaxes, breaking news, mixed claims, corporate/scientific events).
+- **Latest Documented Run**:
+  - **Overall Ground-Truth Accuracy**: **43.75%** (28/64 correct verdicts).
+  - **False-Positive Rate**: **0.00%** (0/23) in this 64-case benchmark.
+  - **Google Fact Check Hit Rate**: **20.31%** (13/64 cases returned Google Fact Check evidence).
+  - **GDELT Unavailability**: **100.00%** (*GDELT was completely unavailable due to persistent HTTP 504 network timeouts during evaluation; it was not a successful retrieval source*).
+  - **Conservative Defaulting**: Cases lacking external evidence safely defaulted to `UNVERIFIED`, supporting fail-safe operation under external service outages.
 
 ---
 
-## API Documentation
+## 7. Limitations & Future Improvements
 
-### Endpoints
-
-#### `GET /`
-Service information endpoint.
-```json
-{
-  "status": "ok",
-  "service": "Fake News Detection API"
-}
-```
-
-#### `GET /health`
-Health check status.
-```json
-{
-  "status": "healthy"
-}
-```
-
-#### `POST /predict`
-Classifies news headline and/or article text.
-
-**Example Request:**
-```json
-{
-  "title": "U.S. Federal Reserve Announces Interest Rate Decision",
-  "text": "The Federal Reserve kept interest rates unchanged today following its two-day policy meeting in Washington."
-}
-```
-
-**Example Response (HTTP 200 OK):**
-```json
-{
-  "prediction": "LIKELY REAL NEWS",
-  "label": 1,
-  "confidence": 95.31,
-  "message": "The model detected linguistic patterns associated with real-news examples in its training data."
-}
-```
-
-### Model Confidence Calculation
-Model confidence is calculated from the SVM decision margin using a deterministic transformation:
-$$\text{confidence} = 100 \times (1 - e^{-|\text{decision\_margin}|})$$
-This value represents a transformed decision-margin score and is **not** a calibrated probability.
+1. **Claim-Specific Evidence Retrieval**: Current keyword-based query construction can retrieve adjacent fact-checks on related topics (e.g., retrieving a viral Mars conspiracy debunk for a legitimate Mars rover discovery), leading to topic mismatch.
+2. **Exact Claim-to-Source Matching**: Implementing fine-grained Natural Language Inference (NLI) or semantic entailment to rigorously verify that retrieved text directly entails or refutes the exact claim.
+3. **Live News Provider Reliability**: Integrating resilient alternative news search providers (e.g., NewsAPI, Bing News, MediaCloud) to replace or augment GDELT when external endpoints experience network timeouts.
+4. **Enhanced Query Formulation**: Utilizing entity-relation extraction and dependency parsing to generate more targeted search queries for complex multi-sentence claims.
 
 ---
 
-## Local Setup & Run Instructions
+## 8. Local Setup & Usage
 
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+ and npm
+- (Optional) Google Fact Check API Key for live fact-checking
 
 ### 1. Backend Setup
-From the project root:
-
 ```bash
 # Install Python dependencies
 pip install -r backend/requirements.txt
+
+# (Optional) Set your Google Fact Check API Key in backend/.env
+# GOOGLE_FACT_CHECK_API_KEY=your_key_here
 
 # Start the FastAPI backend server
 python3 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8008 --reload
 ```
 
 ### 2. Frontend Setup
-In a new terminal window:
-
 ```bash
-# Navigate to the frontend directory
+# In a separate terminal
 cd frontend
-
-# Install Node dependencies
 npm install
-
-# Start the React Vite dev server
 npm run dev
 ```
 
 Open `http://localhost:5173` in your browser.
 
-> **Note:** Production model artifacts (`backend/models/*.joblib`) and datasets (`backend/data/*.csv`) are intentionally excluded from Git tracking via `.gitignore` and must exist locally for the application workflow.
-
 ---
 
-## Limitations & Disclaimers
+## 9. API Endpoints
 
-- **Dataset Dependence**: Model predictions reflect statistical linguistic patterns learned from the WELFake dataset and may not generalize to all news domains or emerging topics.
-- **Statistical Prediction**: The model predicts pattern similarity and does **not** independently verify facts, perform journalistic investigation, or guarantee objective truth.
-- **Error Margin**: Like all machine learning models, predictions can be incorrect.
-- **Uncalibrated Confidence Score**: Model confidence is derived from an SVM decision margin and is **not** a calibrated probability.
-- **Dataset Coverage**: The WELFake dataset contains historical news data and may not capture current events or evolving misinformation formats.
+- `GET /`: Service information and status.
+- `GET /health`: Health check endpoint.
+- `POST /predict`: V1 standalone stylistic classification endpoint.
+- `POST /v2/verify`: V2 full evidence-based verification pipeline (extracts claims, retrieves external evidence, performs stance analysis, and returns final synthesized verdict).
 
----
-
-## Future Deployment
-
-Cloud deployment (e.g., Render for FastAPI backend, Vercel for React frontend, or containerization with Docker) can be added in future iterations. Currently, the application is configured for local production-like simulation.
