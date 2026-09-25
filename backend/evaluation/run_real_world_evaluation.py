@@ -275,6 +275,9 @@ def run_real_world_evaluation(mock_mode: bool = False):
             "ground_truth": ground_truth,
             "ground_truth_source": ground_truth_source,
             "source_date": source_date,
+            # FIX (Stage 30J): store the actual number of extracted claims so that
+            # claim_extraction_success_rate is computed from real data, not a default.
+            "claim_count": len(extracted_claims),
             "fact_check_attempted": True,
             "fact_check_count": fact_check_count,
             "live_news_attempted": True,
@@ -306,8 +309,9 @@ def run_real_world_evaluation(mock_mode: bool = False):
     # 3. Calculate Comprehensive Metrics
     total_cases = len(case_results)
 
-    # Claim extraction success
-    extraction_success_count = sum(1 for c in case_results if c.get("claim_count", 1) > 0)
+    # Claim extraction success — FIX (Stage 30J): use the stored claim_count field
+    # (no default fallback; field is now always written to case_results above).
+    extraction_success_count = sum(1 for c in case_results if c["claim_count"] > 0)
     extraction_success_rate = round((extraction_success_count / total_cases) * 100, 2)
 
     # Retrieval hit rates
@@ -326,7 +330,14 @@ def run_real_world_evaluation(mock_mode: bool = False):
     total_neutrals = sum(c["neutral_evidence_count"] for c in case_results)
     total_all_evidence = sum(c["total_evidence_count"] for c in case_results)
 
-    stance_coverage_rate = 100.0 if total_all_evidence > 0 else 0.0
+    # FIX (Stage 30J): renamed to "retrieved_evidence_stance_coverage" to make the
+    # denominator explicit — this is the % of RETRIEVED evidence items that have a
+    # stance assigned (S+C+N), not a per-case or per-all-64 coverage figure.
+    # Denominator = total_all_evidence (retrieved items only; cases with 0 evidence excluded).
+    retrieved_evidence_stance_count = total_supports + total_contradicts + total_neutrals
+    stance_coverage_rate = round(
+        (retrieved_evidence_stance_count / total_all_evidence) * 100, 2
+    ) if total_all_evidence > 0 else 0.0
 
     verdict_coverage_count = sum(1 for c in case_results if c["v2_overall_assessment"] in ["SUPPORTED", "CONTRADICTED", "UNVERIFIED"])
     verdict_coverage_rate = round((verdict_coverage_count / total_cases) * 100, 2)
@@ -335,13 +346,16 @@ def run_real_world_evaluation(mock_mode: bool = False):
     overall_correct_count = sum(1 for c in case_results if c["is_correct"])
     overall_accuracy = round((overall_correct_count / total_cases) * 100, 2)
 
-    # Accuracy 2: Accuracy excluding cases where required external services failed
+    # Accuracy 2: Accuracy on cases where ALL external services returned ok.
+    # FIX (Stage 30J): when no fully-clean cases exist (e.g. GDELT failed on every
+    # case), report "N/A — no fully-clean cases" instead of 0.0, which was
+    # misleading (implying 0% accuracy rather than the metric being inapplicable).
     valid_cases = [c for c in case_results if all(v == "ok" for v in c["service_status"].values())]
     if valid_cases:
         valid_correct_count = sum(1 for c in valid_cases if c["is_correct"])
-        valid_accuracy = round((valid_correct_count / len(valid_cases)) * 100, 2)
+        valid_accuracy: object = round((valid_correct_count / len(valid_cases)) * 100, 2)
     else:
-        valid_accuracy = 0.0
+        valid_accuracy = "N/A — no fully-clean cases"
 
     unverified_count = sum(1 for c in case_results if c["v2_overall_assessment"] == "UNVERIFIED")
     unverified_rate = round((unverified_count / total_cases) * 100, 2)
@@ -359,8 +373,15 @@ def run_real_world_evaluation(mock_mode: bool = False):
     conflict_count = sum(1 for c in case_results if c["has_conflict"])
     conflict_rate = round((conflict_count / total_cases) * 100, 2)
 
-    service_failure_count = sum(1 for c in case_results if any(v != "ok" for v in c["service_status"].values()))
-    service_failure_rate = round((service_failure_count / total_cases) * 100, 2)
+    # FIX (Stage 30J): renamed from "service_failure" to "gdelt_unavailability" to
+    # accurately reflect what this metric measures — cases where the LIVE_NEWS (GDELT)
+    # provider returned a non-ok status. The verification pipeline itself completed
+    # for all cases; this is NOT a pipeline crash rate.
+    gdelt_unavailability_count = sum(
+        1 for c in case_results
+        if c["service_status"].get("live_news_api", "ok") != "ok"
+    )
+    gdelt_unavailability_rate = round((gdelt_unavailability_count / total_cases) * 100, 2)
 
     # Precision, Recall, F1
     def calc_p_r_f1(pred_label: str, gt_label: str):
@@ -423,21 +444,28 @@ def run_real_world_evaluation(mock_mode: bool = False):
         "fact_check_hit_rate": fact_check_hit_rate,
         "live_news_hit_rate": live_news_hit_rate,
         "evidence_relevance_rate": evidence_relevance_rate,
-        "stance_determination_coverage": stance_coverage_rate,
+        # FIX (Stage 30J): renamed from stance_determination_coverage.
+        # Denominator = total retrieved evidence items (not total cases).
+        "retrieved_evidence_stance_coverage": stance_coverage_rate,
         "supports_evidence_count": total_supports,
         "contradicts_evidence_count": total_contradicts,
         "neutral_evidence_count": total_neutrals,
         "total_all_evidence_count": total_all_evidence,
         "verdict_coverage_rate": verdict_coverage_rate,
         "overall_ground_truth_accuracy": overall_accuracy,
-        "valid_ground_truth_accuracy_excl_failures": valid_accuracy,
+        # FIX (Stage 30J): renamed and changed sentinel value — "N/A" when no
+        # fully-clean cases exist, not 0.0 (which implied 0% accuracy).
+        "accuracy_fully_clean_cases": valid_accuracy,
+        "fully_clean_case_count": len(valid_cases),
         "unverified_rate": unverified_rate,
         "false_positive_rate": false_positive_rate,
         "false_negative_rate": false_negative_rate,
         "conflict_rate": conflict_rate,
         "conflict_count": conflict_count,
-        "service_failure_rate": service_failure_rate,
-        "service_failure_count": service_failure_count,
+        # FIX (Stage 30J): renamed from service_failure_rate/count — measures
+        # GDELT (live_news_api) unavailability, not overall pipeline failure.
+        "gdelt_unavailability_rate": gdelt_unavailability_rate,
+        "gdelt_unavailability_count": gdelt_unavailability_count,
         "precision_supported": p_supp,
         "recall_supported": r_supp,
         "f1_supported": f1_supp,
@@ -479,18 +507,18 @@ def run_real_world_evaluation(mock_mode: bool = False):
     print(f"  Fact-Check Retrieval Hit Rate:       {fact_check_hit_rate}%")
     print(f"  Live-News Retrieval Hit Rate:        {live_news_hit_rate}%")
     print(f"  Evidence Relevance Rate:            {evidence_relevance_rate}%")
-    print(f"  Stance Determination Coverage:     {stance_coverage_rate}%")
+    print(f"  Retrieved-Evidence Stance Coverage: {stance_coverage_rate}% (of retrieved items)")
     print(f"  SUPPORTS Evidence Count:            {total_supports}")
     print(f"  CONTRADICTS Evidence Count:         {total_contradicts}")
     print(f"  NEUTRAL Evidence Count:             {total_neutrals}")
     print(f"  Verdict Coverage Rate:              {verdict_coverage_rate}%")
     print(f"  Ground-Truth Accuracy (All Cases):  {overall_accuracy}%")
-    print(f"  Ground-Truth Accuracy (Excl Fail):  {valid_accuracy}%")
+    print(f"  Accuracy (Fully-Clean Cases Only):  {valid_accuracy}")
     print(f"  UNVERIFIED Rate:                    {unverified_rate}%")
     print(f"  False Positive Rate (Fake -> Real): {false_positive_rate}%")
     print(f"  False Negative Rate (Real -> Fake): {false_negative_rate}%")
     print(f"  Conflict Rate:                      {conflict_rate}% ({conflict_count} cases)")
-    print(f"  Service Failure Rate:               {service_failure_rate}% ({service_failure_count} cases)")
+    print(f"  GDELT Unavailability Rate:          {gdelt_unavailability_rate}% ({gdelt_unavailability_count} cases)")
     print("-" * 80)
     print("Classification Metrics (Precision / Recall / F1):")
     print(f"  - SUPPORTED:    Precision: {p_supp}% | Recall: {r_supp}% | F1: {f1_supp}")
