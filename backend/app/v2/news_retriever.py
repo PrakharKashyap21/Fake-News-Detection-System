@@ -22,6 +22,12 @@ class NewsRetrieverAPIError(RuntimeError):
         self.message = message
 
 
+class NewsRetrieverRateLimitError(NewsRetrieverAPIError):
+    """Raised when live news API returns HTTP 429 rate limit status."""
+    def __init__(self, message: str = "Rate limit exceeded (HTTP 429)"):
+        super().__init__(429, message)
+
+
 class NewsRetrieverMalformedResponseError(ValueError):
     """Raised when live news API returns malformed or non-parseable JSON response."""
     pass
@@ -58,7 +64,7 @@ class GDELTNewsRetriever(BaseNewsRetriever):
 
     BASE_URL = "https://api.gdeltproject.org/api/v2/doc/doc"
 
-    def __init__(self, mock_mode: bool = False, timeout: float = 5.0):
+    def __init__(self, mock_mode: bool = False, timeout: float = 15.0):
         self.mock_mode = mock_mode
         self.timeout = timeout
 
@@ -158,6 +164,8 @@ class GDELTNewsRetriever(BaseNewsRetriever):
                 error_body = http_err.read().decode("utf-8")
             except Exception:
                 pass
+            if http_err.code == 429:
+                raise NewsRetrieverRateLimitError(error_body or http_err.reason) from http_err
             raise NewsRetrieverAPIError(http_err.code, error_body or http_err.reason) from http_err
         except urllib.error.URLError as url_err:
             reason_str = str(url_err.reason)

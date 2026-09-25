@@ -17,6 +17,7 @@ from backend.app.v2.fact_check_retriever import (
 from backend.app.v2.news_retriever import (
     get_news_retriever,
     NewsRetrieverAPIError,
+    NewsRetrieverRateLimitError,
     GDELTNewsRetriever
 )
 from backend.app.v2.evidence_aggregator import get_evidence_aggregator, EvidenceAggregator
@@ -94,8 +95,13 @@ class VerificationService:
             news_evidence = []
             try:
                 news_evidence = self.news_retriever.search_claim_news(claim)
+            except NewsRetrieverRateLimitError:
+                service_status["live_news_api"] = "rate_limited"
             except NewsRetrieverAPIError as news_err:
-                service_status["live_news_api"] = f"error_{news_err.status_code}"
+                if news_err.status_code == 429:
+                    service_status["live_news_api"] = "rate_limited"
+                else:
+                    service_status["live_news_api"] = f"error_{news_err.status_code}"
             except Exception:
                 service_status["live_news_api"] = "error"
 

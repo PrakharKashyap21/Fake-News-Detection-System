@@ -51,3 +51,4 @@ frontend/dist-ssr/
 # Evaluation outputs
 backend/evaluation/results.json
 backend/evaluation/results_mock.json
+backend/evaluation/real_world_results.json

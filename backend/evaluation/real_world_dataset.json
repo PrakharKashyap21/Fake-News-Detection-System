@@ -1,0 +1,649 @@
+[
+  {
+    "id": "real_01",
+    "category": "A. Known true / historically established claims",
+    "title": "NASA Perseverance Rover Discovers Organic Compounds on Mars",
+    "text": "NASA's Perseverance rover detected carbon-based organic molecules inside rock samples at Jezero Crater on Mars.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "NASA Official Release & Science Journal Publication (July 2023)",
+    "source_date": "2026-09-25",
+    "notes": "Historically confirmed scientific discovery by NASA Mars 2020 mission."
+  },
+  {
+    "id": "real_02",
+    "category": "A. Known true / historically established claims",
+    "title": "James Webb Space Telescope Unveils Deepest Infrared Image of Universe",
+    "text": "NASA and ESA released landmark deep field infrared images captured by the James Webb Space Telescope.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "NASA / ESA Official Webb Science Release (July 2022)",
+    "source_date": "2026-09-25",
+    "notes": "Verified astronomical milestone documented in peer-reviewed astrophysics literature."
+  },
+  {
+    "id": "real_03",
+    "category": "A. Known true / historically established claims",
+    "title": "WHO Declared Ending COVID-19 Global Health Emergency",
+    "text": "The World Health Organization announced that COVID-19 no longer constitutes a global public health emergency of international concern.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "World Health Organization Director-General Statement (May 2023)",
+    "source_date": "2026-09-25",
+    "notes": "Official public health declaration by WHO International Health Regulations Committee."
+  },
+  {
+    "id": "real_04",
+    "category": "A. Known true / historically established claims",
+    "title": "Apollo 11 Astronauts Neil Armstrong and Buzz Aldrin Landed on Moon in 1969",
+    "text": "NASA's Apollo 11 mission successfully landed American astronauts Neil Armstrong and Buzz Aldrin on the lunar surface on July 20, 1969.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "NASA Historical Archives & International Astronomical Federation Records",
+    "source_date": "2026-09-25",
+    "notes": "Established historical fact verified by global space agencies."
+  },
+  {
+    "id": "real_05",
+    "category": "A. Known true / historically established claims",
+    "title": "Water Molecule Chemical Composition Consists of Hydrogen and Oxygen",
+    "text": "Pure water is a chemical compound consisting of two hydrogen atoms bonded to one oxygen atom forming H2O.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "IUPAC Chemical Nomenclature & International Union of Pure and Applied Chemistry",
+    "source_date": "2026-09-25",
+    "notes": "Fundamental physical science law."
+  },
+  {
+    "id": "real_06",
+    "category": "A. Known true / historically established claims",
+    "title": "Large Hadron Collider Discovered Higgs Boson Particle at CERN",
+    "text": "Physicists at CERN's Large Hadron Collider observed a new subatomic particle consistent with the long-sought Higgs boson.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "CERN Official Press Announcement & Physics Letters B (July 2012)",
+    "source_date": "2026-09-25",
+    "notes": "Nobel prize winning particle physics discovery."
+  },
+  {
+    "id": "real_07",
+    "category": "A. Known true / historically established claims",
+    "title": "Paris Agreement on Climate Change Adopted by International Consensus",
+    "text": "Representatives from 196 parties at COP21 in Paris adopted a legally binding international treaty on climate change to limit global warming.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "United Nations Framework Convention on Climate Change (UNFCCC, Dec 2015)",
+    "source_date": "2026-09-25",
+    "notes": "Official United Nations treaty document."
+  },
+  {
+    "id": "real_08",
+    "category": "A. Known true / historically established claims",
+    "title": "Human Genome Project Completed Full Sequencing of Human DNA",
+    "text": "The international Human Genome Project completed the first comprehensive mapping and sequencing of the human genome.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "National Human Genome Research Institute (NHGRI) & Nature/Science (2003)",
+    "source_date": "2026-09-25",
+    "notes": "Established landmark genomic research accomplishment."
+  },
+
+  {
+    "id": "false_01",
+    "category": "B. Known false / debunked claims",
+    "title": "Viral Image Shows Pope Francis Wearing Stylish White Puffer Jacket",
+    "text": "A photo circulating on social media shows Pope Francis walking outdoors wearing a designer white puffer jacket.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "Snopes & Reuters Fact Check Verification (March 2023 AI Midjourney Generation)",
+    "source_date": "2026-09-25",
+    "notes": "Debunked synthetic AI image creation."
+  },
+  {
+    "id": "false_02",
+    "category": "B. Known false / debunked claims",
+    "title": "NASA Warns Earth Will Experience 15 Days of Total Darkness in November",
+    "text": "NASA released an emergency announcement predicting Earth will plunge into complete blackout and total darkness for 15 days due to solar alignment.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "NASA News Officer Statement & Snopes Archive Debunk",
+    "source_date": "2026-09-25",
+    "notes": "Recurring internet hoax disproven by space agency."
+  },
+  {
+    "id": "false_03",
+    "category": "B. Known false / debunked claims",
+    "title": "Drinking Hot Lemon Water Completely Cures All Forms of Human Cancer",
+    "text": "Medical researchers confirmed that drinking hot water mixed with slices of lemon destroys malignant cancer cells without chemotherapy.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "American Cancer Society & PolitiFact Health Check",
+    "source_date": "2026-09-25",
+    "notes": "Dangerous medical misinformation disproven by oncologists."
+  },
+  {
+    "id": "false_04",
+    "category": "B. Known false / debunked claims",
+    "title": "Earth Is Flat Disk and NASA Edits All Satellite Photographs",
+    "text": "Geological evidence shows the Earth is a flat plane surrounded by ice walls, and space agencies edit all images to fake a spherical globe.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "Geodetic Scientific Consensus & Astronomical Society Archives",
+    "source_date": "2026-09-25",
+    "notes": "Conspiracy theory contradicted by satellite imagery and physics."
+  },
+  {
+    "id": "false_05",
+    "category": "B. Known false / debunked claims",
+    "title": "COVID-19 Vaccines Contain Injectable 5G Microchips for Digital Surveillance",
+    "text": "Investigative reports claim COVID-19 immunization vials contain microscopic 5G receiver chips designed to track human body movements.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "US FDA / CDC Chemical Composition Audits & FactCheck.org",
+    "source_date": "2026-09-25",
+    "notes": "Debunked conspiracy claim without physical basis."
+  },
+  {
+    "id": "false_06",
+    "category": "B. Known false / debunked claims",
+    "title": "Great Wall of China Is Easily Visible from Low Earth Orbit with Naked Eye",
+    "text": "Astronauts confirm the Great Wall of China is the only human-made structure easily visible from orbit without camera magnification.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "NASA Astronaut Logs & Scientific American Geographical Reports",
+    "source_date": "2026-09-25",
+    "notes": "Persistent myth debunked by space station astronauts."
+  },
+  {
+    "id": "false_07",
+    "category": "B. Known false / debunked claims",
+    "title": "Drinking Household Chemical Disinfectant Safely Cleans Viral Pathogens",
+    "text": "Consuming diluted household bleach or disinfectant spray safely cleans internal body organs and eliminates viral infections in minutes.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "US Poison Control Centers & World Health Organization Public Health Alerts",
+    "source_date": "2026-09-25",
+    "notes": "Lethal medical misinformation."
+  },
+  {
+    "id": "false_08",
+    "category": "B. Known false / debunked claims",
+    "title": "Sun Revolves Around Stationary Earth Every 24 Hours",
+    "text": "Astronomical data proves the Sun orbits around a completely stationary Earth every 24 hours.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "International Astronomical Union Heliocentric Astronomy",
+    "source_date": "2026-09-25",
+    "notes": "Debunked geocentric theory."
+  },
+
+  {
+    "id": "fc_01",
+    "category": "C. Claims with published fact checks",
+    "title": "5G Radio Frequency Towers Cause and Transmit Viral Coronavirus Infections",
+    "text": "5G wireless mobile network radiation directly creates and spreads coronavirus particles into human lungs.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "WHO Health Topic Brief & Full Fact Investigation (2020)",
+    "source_date": "2026-09-25",
+    "notes": "Extensive international fact-checks confirmed radio frequencies cannot generate biological viruses."
+  },
+  {
+    "id": "fc_02",
+    "category": "C. Claims with published fact checks",
+    "title": "South American Bananas Were Injected with Poisonous Cartel Chemicals",
+    "text": "Food safety warnings urge citizens to stop buying imported bananas after drug cartels injected lethal substances into fruit shipments.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "US FDA Food Safety Statement & Snopes Fact Check",
+    "source_date": "2026-09-25",
+    "notes": "Viral food panic debunked by regulatory inspectors."
+  },
+  {
+    "id": "fc_03",
+    "category": "C. Claims with published fact checks",
+    "title": "Stanford Study Proves Global Atmospheric Warming Stopped a Decade Ago",
+    "text": "Climate scientists at Stanford published a paper proving atmospheric warming halted and planet temperatures began cooling.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "Climate Feedback Fact Check & Stanford Woods Institute Statement",
+    "source_date": "2026-09-25",
+    "notes": "Misquoted study refuted directly by study authors."
+  },
+  {
+    "id": "fc_04",
+    "category": "C. Claims with published fact checks",
+    "title": "UNESCO Officially Declared Indian National Anthem as Best Anthem in World",
+    "text": "UNESCO voted and officially declared the Indian national anthem 'Jana Gana Mana' as the world's best national anthem.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "UNESCO Press Office Verification & India Today Fact Check",
+    "source_date": "2026-09-25",
+    "notes": "Hoax debunked by UNESCO official representatives."
+  },
+  {
+    "id": "fc_05",
+    "category": "C. Claims with published fact checks",
+    "title": "Microwave Ovens Destroy All Nutrients in Food and Cause Carcinogenic Radiations",
+    "text": "Cooking food in microwave ovens destroys 99 percent of nutritional value and produces toxic radiation in meals.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "Harvard Health Publishing & WHO Radiation Safety Fact Sheet",
+    "source_date": "2026-09-25",
+    "notes": "Nutritional and physical science fact-checks confirm microwaves preserve nutrients safely."
+  },
+  {
+    "id": "fc_06",
+    "category": "C. Claims with published fact checks",
+    "title": "Eating Carrots Gives Humans Night Vision and Cures Myopia",
+    "text": "Consuming daily quantities of raw carrots restores perfect 20/20 vision and allows humans to see in total darkness.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "American Academy of Ophthalmology & Smithsonian Institution History",
+    "source_date": "2026-09-25",
+    "notes": "WWII British military propaganda myth disproven by ophthalmologists."
+  },
+  {
+    "id": "fc_07",
+    "category": "C. Claims with published fact checks",
+    "title": "Sharks Do Not Suffer from Cancer and Shark Cartilage Cures Malignant Tumors",
+    "text": "Biological research proves sharks are immune to all forms of cancer and consuming ground shark cartilage shrinks human tumors.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "National Cancer Institute & Johns Hopkins Oncology Reports",
+    "source_date": "2026-09-25",
+    "notes": "Debunked myth; sharks do get cancer and cartilage shows no clinical efficacy."
+  },
+  {
+    "id": "fc_08",
+    "category": "C. Claims with published fact checks",
+    "title": "Using Mobile Cell Phones Causes Immediate Malignant Brain Tumors",
+    "text": "Frequent mobile phone calls emit radiofrequency energy that directly causes malignant brain tumors within months.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "National Cancer Institute & WHO International Agency for Research on Cancer",
+    "source_date": "2026-09-25",
+    "notes": "Large-scale epidemiological studies found no causal connection."
+  },
+
+  {
+    "id": "news_01",
+    "category": "D. Recent/current news claims",
+    "title": "Federal Reserve Held Target Range for Federal Funds Interest Rate",
+    "text": "Federal Reserve policymakers maintained the benchmark interest rate target range while monitoring inflation data.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "Federal Reserve Board Public Monetary Policy Release",
+    "source_date": "2026-09-25",
+    "notes": "Standard economic news coverage of central bank decisions."
+  },
+  {
+    "id": "news_02",
+    "category": "D. Recent/current news claims",
+    "title": "Delegates Gather at UN Climate Summit COP28 in Dubai",
+    "text": "International climate negotiators and head of states convened at COP28 in Dubai to discuss global emission targets.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "UN Climate Change Secretariat & Reuters Global News Desk",
+    "source_date": "2026-09-25",
+    "notes": "International diplomatic gathering news reporting."
+  },
+  {
+    "id": "news_03",
+    "category": "D. Recent/current news claims",
+    "title": "Technology Companies Increase Capital Outlays for Artificial Intelligence Infrastructure",
+    "text": "Leading technology enterprises reported increased capital expenditures dedicated to data centers and computing hardware for artificial intelligence.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "SEC Quarterly 10-Q Corporate Filings & Financial Times",
+    "source_date": "2026-09-25",
+    "notes": "Verified corporate financial news."
+  },
+  {
+    "id": "news_04",
+    "category": "D. Recent/current news claims",
+    "title": "SpaceX Conducts Starship Integrated Flight Test",
+    "text": "SpaceX launched an integrated Starship orbital test flight from Boca Chica Texas to test upper stage re-entry hardware.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "FAA Commercial Space Transportation License & SpaceX Mission Brief",
+    "source_date": "2026-09-25",
+    "notes": "Verified aerospace launch news."
+  },
+  {
+    "id": "news_05",
+    "category": "D. Recent/current news claims",
+    "title": "European Union Chip Fabrication Plant Construction Expands Under Chips Act",
+    "text": "European semiconductor manufacturers began construction on advanced wafer fabrication facilities supported by regional industrial policy funding.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "European Commission Directorate-General for Network Technologies",
+    "source_date": "2026-09-25",
+    "notes": "Verified economic and industrial policy news."
+  },
+  {
+    "id": "news_06",
+    "category": "D. Recent/current news claims",
+    "title": "European Parliament Passed EU Artificial Intelligence Act",
+    "text": "Members of the European Parliament voted to approve the EU AI Act establishing risk-based regulatory standards for AI systems.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "European Parliament Official Newsroom (March 2024)",
+    "source_date": "2026-09-25",
+    "notes": "Enacted legislative milestone."
+  },
+  {
+    "id": "news_07",
+    "category": "D. Recent/current news claims",
+    "title": "Electric Vehicle Global Adoption Grows Led by Asian and European Markets",
+    "text": "International energy agencies reported global electric vehicle sales expanded year-over-year driven by regional market demand.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "International Energy Agency (IEA) Global EV Outlook",
+    "source_date": "2026-09-25",
+    "notes": "Global energy transition statistical report."
+  },
+  {
+    "id": "news_08",
+    "category": "D. Recent/current news claims",
+    "title": "Global Commercial Aviation Traffic Rebounds to Pre-Pandemic Passenger Benchmark",
+    "text": "The International Air Transport Association confirmed total commercial passenger flight volume surpassed 2019 levels.",
+    "ground_truth": "SUPPORTED",
+    "ground_truth_source": "International Air Transport Association (IATA) Air Passenger Market Analysis",
+    "source_date": "2026-09-25",
+    "notes": "Official international airline industry report."
+  },
+
+  {
+    "id": "synth_01",
+    "category": "E. Realistic synthetic false claims",
+    "title": "European Union Passes Emergency Law Mandating RFID Microchip Implants",
+    "text": "The European Commission enacted an emergency directive requiring all EU citizens to receive digital ID microchips in their right hand.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "Full Fact EU Law Audit & European Commission Public Registry",
+    "source_date": "2026-09-25",
+    "notes": "Fabricated synthetic law claim."
+  },
+  {
+    "id": "synth_02",
+    "category": "E. Realistic synthetic false claims",
+    "title": "Bank of England Enacts 100 Percent Emergency Tax on All Cryptocurrency Trades",
+    "text": "UK central bank governors announced a retroactive 100 percent tax penalty on all bitcoin and cryptocurrency transactions.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "Bank of England Regulatory Publications & HM Treasury",
+    "source_date": "2026-09-25",
+    "notes": "Fabricated financial regulatory policy claim."
+  },
+  {
+    "id": "synth_03",
+    "category": "E. Realistic synthetic false claims",
+    "title": "Global Tech Firm Eliminates All Remote Work Positions Worldwide Effective Monday",
+    "text": "An internal leak alleges a multinational software firm ordered all remote personnel to report to corporate headquarters by Monday or face instant termination.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "Unverified Corporate Anonymity Rumor",
+    "source_date": "2026-09-25",
+    "notes": "Unsubstantiated workplace leak claim."
+  },
+  {
+    "id": "synth_04",
+    "category": "E. Realistic synthetic false claims",
+    "title": "Global Financial Consortium Cancels All Physical Credit Cards by End of Month",
+    "text": "International credit card issuers announced all plastic credit cards will be deactivated on the 30th and replaced exclusively by biometric palm scans.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "Federal Reserve Consumer Financial Protection Bureau",
+    "source_date": "2026-09-25",
+    "notes": "Fabricated banking rumor."
+  },
+  {
+    "id": "synth_05",
+    "category": "E. Realistic synthetic false claims",
+    "title": "International Space Agency Imposes Five-Year Ban on Commercial Satellite Launches",
+    "text": "Space regulators enacted a mandatory 5-year freeze prohibiting private rocket companies from putting satellites into Earth orbit.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "International Telecommunication Union & FAA Commercial Space Launch Manifests",
+    "source_date": "2026-09-25",
+    "notes": "Fabricated regulatory restriction claim."
+  },
+  {
+    "id": "synth_06",
+    "category": "E. Realistic synthetic false claims",
+    "title": "World Health Organization Bans Commercial Sale of Processed White Sugar Globally",
+    "text": "The WHO passed an international ban declaring commercial sale of refined white sugar illegal in all member nations.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "World Health Organization Codex Alimentarius Commission",
+    "source_date": "2026-09-25",
+    "notes": "Fabricated international health policy claim."
+  },
+  {
+    "id": "synth_07",
+    "category": "E. Realistic synthetic false claims",
+    "title": "Major Social Media Network Bans All Political Commentary and News Sharing",
+    "text": "Executives at a major social network announced account suspensions for any user posting articles related to government elections.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "Platform Official Policy Updates & Terms of Service Audits",
+    "source_date": "2026-09-25",
+    "notes": "Fabricated tech policy claim."
+  },
+  {
+    "id": "synth_08",
+    "category": "E. Realistic synthetic false claims",
+    "title": "United Nations General Assembly Votes to Replace National Passports by 2028",
+    "text": "A UN resolution approved ending individual country passports in favor of a single world identity card managed by international committee.",
+    "ground_truth": "CONTRADICTED",
+    "ground_truth_source": "United Nations General Assembly Resolutions Index",
+    "source_date": "2026-09-25",
+    "notes": "Fabricated diplomatic resolution claim."
+  },
+
+  {
+    "id": "unver_01",
+    "category": "F. Unverified/ambiguous claims",
+    "title": "Local Bakery Sourdough Starter Cures Chronic Insomnia in Three Days",
+    "text": "A small family bakery claims eating slices of their specialty wild yeast sourdough bread cures chronic sleep deprivation within three days.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "No Clinical Evaluation or Peer-Reviewed Dietary Studies",
+    "source_date": "2026-09-25",
+    "notes": "Unsubstantiated local business medical claim."
+  },
+  {
+    "id": "unver_02",
+    "category": "F. Unverified/ambiguous claims",
+    "title": "Amateur Astronomer in Ohio Reports Observing Pulsating Blue Spheres Near Jupiter",
+    "text": "An amateur telescope operator posted video recordings claiming to show previously undetected luminous blue spheres orbiting near Jupiter.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "No Astronomical Observatory Confirmation or NASA Telemetry",
+    "source_date": "2026-09-25",
+    "notes": "Single unverified amateur sighting claim."
+  },
+  {
+    "id": "unver_03",
+    "category": "F. Unverified/ambiguous claims",
+    "title": "Hobbyist Exploration Group Claims Discovery of Ancient Wooden Vessel in Remote Lake",
+    "text": "A local diving club claims sonar images reveal an ancient wooden vessel at the bottom of a remote mountain lake.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "No Archeological Survey or Official Scientific Verification",
+    "source_date": "2026-09-25",
+    "notes": "Unverified local discovery claim."
+  },
+  {
+    "id": "unver_04",
+    "category": "F. Unverified/ambiguous claims",
+    "title": "Pet Owner Claims African Grey Parrot Learned to Recite French Poetry in Two Weeks",
+    "text": "A bird trainer claims their pet parrot memorized full stanzas of 19th-century French poetry after listening to audiobooks for fourteen days.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "No Avian Behavioral Science Record",
+    "source_date": "2026-09-25",
+    "notes": "Anecdotal human interest story."
+  },
+  {
+    "id": "unver_05",
+    "category": "F. Unverified/ambiguous claims",
+    "title": "Speleologist Claims Underground Cave Minerals Emit Insect-Repelling Luminescence",
+    "text": "A cave explorer posted photos claiming glowing crystal formations inside an unmapped cavern naturally repel mosquitoes and ticks.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "No Geological Survey or Entomological Verification",
+    "source_date": "2026-09-25",
+    "notes": "Unverified mineral claim."
+  },
+  {
+    "id": "unver_06",
+    "category": "F. Unverified/ambiguous claims",
+    "title": "Home Gardener Claims Rare Hybrid Orchid Bloomed Continuously for 500 Consecutive Days",
+    "text": "An amateur horticulturist claims a potted hybrid orchid maintained fresh blossoms without wilting for over sixteen consecutive months.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "No Botanical Society Record",
+    "source_date": "2026-09-25",
+    "notes": "Anecdotal gardening claim."
+  },
+  {
+    "id": "unver_07",
+    "category": "F. Unverified/ambiguous claims",
+    "title": "Coin Collector Claims Finding 1923 Silver Dollar Hand-Signed by President Coolidge",
+    "text": "A numismatist posted pictures claiming to own a rare 1923 Peace Silver Dollar bearing the authentic ink signature of President Calvin Coolidge.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "No Professional Coin Grading Service (PCGS/NGC) Authentication",
+    "source_date": "2026-09-25",
+    "notes": "Unauthenticated historical artifact claim."
+  },
+  {
+    "id": "unver_08",
+    "category": "F. Unverified/ambiguous claims",
+    "title": "Independent Inventor Claims Desktop Solar Device Powers Refrigerator for One Dollar",
+    "text": "An independent engineer posted a video claiming a prototype shoe-box sized solar collector generates enough AC power to run major appliances for pennies.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "No Electrical Engineering Test Certification or Patent Filing",
+    "source_date": "2026-09-25",
+    "notes": "Unverified gadget prototype claim."
+  },
+
+  {
+    "id": "conflict_01",
+    "category": "G. Conflicting-evidence claims",
+    "title": "Clinical Trial of Herbal Extract Shows Memory Improvement in Initial Subjects",
+    "text": "Researchers reported memory improvement in initial clinical trial of dietary supplement, while medical board rejects claims stating evidence is unproven.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "Journal of Dietary Supplements vs Medical Review Board Report",
+    "source_date": "2026-09-25",
+    "notes": "Genuine scientific conflict with opposing study conclusions."
+  },
+  {
+    "id": "conflict_02",
+    "category": "G. Conflicting-evidence claims",
+    "title": "Archeological Team Claims Discovery of Inscribed Ancient Tablet",
+    "text": "Excavation team announced discovery of ancient inscribed tablet, while independent researchers assert discovered tablet is a modern forgery.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "Archeological Association Journal vs Academic Epigraphy Committee Audit",
+    "source_date": "2026-09-25",
+    "notes": "Academic dispute over artifact authenticity."
+  },
+  {
+    "id": "conflict_03",
+    "category": "G. Conflicting-evidence claims",
+    "title": "Municipal Universal Basic Income Program Impact on Local Employment",
+    "text": "University study concludes municipal basic income program increased employment, while economic institute report asserts basic income decreased worker participation.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "University Economic Policy Center vs Economic Research Institute Analysis",
+    "source_date": "2026-09-25",
+    "notes": "Economic policy evaluation dispute."
+  },
+  {
+    "id": "conflict_04",
+    "category": "G. Conflicting-evidence claims",
+    "title": "Dietary Sodium Reduction Directly Decreases All-Cause Mortality Across Populations",
+    "text": "Public health trials indicate reducing sodium lowers blood pressure, whereas clinical meta-analyses found low-sodium diets show no statistical reduction in overall mortality.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "American Heart Association Guidelines vs Cochrane Systematic Review",
+    "source_date": "2026-09-25",
+    "notes": "Long-standing medical research controversy."
+  },
+  {
+    "id": "conflict_05",
+    "category": "G. Conflicting-evidence claims",
+    "title": "Daily Coffee Consumption Impacts Cardiovascular Health",
+    "text": "Cardiology studies show moderate coffee consumption protects against heart failure, while opposing observational trials correlate high caffeine intake with hypertension risks.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "European Journal of Preventive Cardiology vs American Journal of Hypertension",
+    "source_date": "2026-09-25",
+    "notes": "Nutritional epidemiology conflicting evidence."
+  },
+  {
+    "id": "conflict_06",
+    "category": "G. Conflicting-evidence claims",
+    "title": "Remote Work Policies Increase Total Corporate Worker Output",
+    "text": "Management studies report remote work increases individual task output, while economic productivity indexes show remote work reduces collaborative team output.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "Stanford Economic Research Group vs National Bureau of Economic Research (NBER)",
+    "source_date": "2026-09-25",
+    "notes": "Conflicting macroeconomic productivity findings."
+  },
+  {
+    "id": "conflict_07",
+    "category": "G. Conflicting-evidence claims",
+    "title": "Community Solar Microgrids Lower Retail Electricity Costs for Consumers",
+    "text": "Environmental policy reports show solar microgrids reduce monthly utility bills, whereas energy utility rate cases document increased grid maintenance tariffs for microgrid customers.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "National Renewable Energy Laboratory (NREL) vs Public Utilities Commission Docket",
+    "source_date": "2026-09-25",
+    "notes": "Conflicting energy market cost analyses."
+  },
+  {
+    "id": "conflict_08",
+    "category": "G. Conflicting-evidence claims",
+    "title": "Early Childhood Music Instruction Directly Boosts Mathematical Aptitude",
+    "text": "Neuroscience studies suggest learning musical instruments enhances spatial-temporal reasoning, whereas educational meta-analyses found no direct causal link to math scores.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "Journal of Educational Psychology vs Educational Research Review",
+    "source_date": "2026-09-25",
+    "notes": "Conflicting cognitive development literature."
+  },
+
+  {
+    "id": "multi_01",
+    "category": "H. Multi-claim articles",
+    "title": "NASA Mars Discoveries and Extraterrestrial Civilization Rumors",
+    "text": "NASA's Perseverance rover discovered organic carbon compounds in Jezero Crater on Mars. Meanwhile, online blogs claim ancient alien structures were photographed nearby.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "NASA Mars 2020 Mission (Organic claim supported) & Astrobiology Consensus (Alien structure claim contradicted)",
+    "source_date": "2026-09-25",
+    "notes": "Multi-claim article combining one true claim and one debunked claim."
+  },
+  {
+    "id": "multi_02",
+    "category": "H. Multi-claim articles",
+    "title": "Global Climate Trends and Solar Alignment Blackout Rumors",
+    "text": "UN climate negotiators gathered in Dubai at COP28 to address global emission targets. In contrast, social media posts allege NASA predicted 15 days of total darkness.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "UNFCCC COP28 Proceedings (Climate summit supported) & NASA Statements (15 days darkness contradicted)",
+    "source_date": "2026-09-25",
+    "notes": "Multi-claim article combining real news with debunked hoax."
+  },
+  {
+    "id": "multi_03",
+    "category": "H. Multi-claim articles",
+    "title": "Space Telescope Discoveries and Lunar Landing Conspiracy Claims",
+    "text": "The James Webb Space Telescope released deep infrared images of distant galaxies. However, conspiracists claim Apollo 11 moon landings were filmed on a sound stage.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "ESA/NASA Webb Science (Webb supported) & NASA Historical Records (Moon landing staged contradicted)",
+    "source_date": "2026-09-25",
+    "notes": "Multi-claim article mixing verified astronomy with debunked space conspiracy."
+  },
+  {
+    "id": "multi_04",
+    "category": "H. Multi-claim articles",
+    "title": "Central Bank Policy and Crypto Emergency Tax Claims",
+    "text": "The Federal Reserve held benchmark interest rates steady. Meanwhile, viral rumors falsely allege the Bank of England passed an emergency 100 percent tax on bitcoin.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "Federal Reserve Monetary Report (Fed rates supported) & Bank of England Directives (Crypto tax contradicted)",
+    "source_date": "2026-09-25",
+    "notes": "Multi-claim article pairing authentic financial policy with synthetic hoax."
+  },
+  {
+    "id": "multi_05",
+    "category": "H. Multi-claim articles",
+    "title": "WHO Public Health Announcements and 5G Radiation Hoax",
+    "text": "The World Health Organization declared the COVID-19 emergency over. Simultaneously, conspiracy forums assert 5G mobile towers generate coronavirus particles.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "WHO Official Statement (Emergency ended supported) & WHO Technical Briefs (5G virus contradicted)",
+    "source_date": "2026-09-25",
+    "notes": "Multi-claim health article with mixed true and false statements."
+  },
+  {
+    "id": "multi_06",
+    "category": "H. Multi-claim articles",
+    "title": "CERN Particle Physics Discoveries and Black Hole Myths",
+    "text": "Physicists at CERN observed the Higgs boson particle at the Large Hadron Collider. Concurrently, viral rumors allege the particle accelerator created a black hole.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "CERN Higgs Boson Announcement (Higgs supported) & CERN Safety Assessment (Black hole contradicted)",
+    "source_date": "2026-09-25",
+    "notes": "Multi-claim physics article."
+  },
+  {
+    "id": "multi_07",
+    "category": "H. Multi-claim articles",
+    "title": "Genomic Research Milestones and EU Microchip Hoax",
+    "text": "The Human Genome Project mapped the complete sequencing of human DNA. Meanwhile, conspiracy posts claim the European Union mandated RFID microchips for all citizens.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "NHGRI Genome Archives (Genome project supported) & European Commission Audit (EU microchip contradicted)",
+    "source_date": "2026-09-25",
+    "notes": "Multi-claim article with mixed true genomic science and false policy rumor."
+  },
+  {
+    "id": "multi_08",
+    "category": "H. Multi-claim articles",
+    "title": "Commercial Space Flight Progress and Secret Moon City Claims",
+    "text": "SpaceX completed a Starship orbital test flight from Texas. At the same time, sensationalist blogs claim astronauts found an ancient alien city on the far side of the Moon.",
+    "ground_truth": "UNVERIFIED",
+    "ground_truth_source": "FAA Space Launch License (Starship supported) & Lunar Reconnaissance Orbiter Data (Moon city contradicted)",
+    "source_date": "2026-09-25",
+    "notes": "Multi-claim article mixing authentic aerospace news with lunar fiction."
+  }
+]
