@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from backend.app.v2.schemas import (
     VerificationRequest,
     VerificationResponse,
@@ -14,8 +14,14 @@ from backend.app.v2.fact_check_retriever import (
     FactCheckAPIError,
     GoogleFactCheckRetriever
 )
+from backend.app.v2.newsapi_retriever import (
+    get_newsapi_retriever,
+    NewsAPIRetriever,
+    NewsAPIKeyError,
+    NewsAPIError,
+    NewsAPIRateLimitError
+)
 from backend.app.v2.news_retriever import (
-    get_news_retriever,
     NewsRetrieverAPIError,
     NewsRetrieverRateLimitError,
     GDELTNewsRetriever
@@ -30,14 +36,14 @@ from backend.app.v2.svm_signal import get_svm_signal_provider, SVMSignalProvider
 class VerificationService:
     """Orchestrates V2 verification workflow combining claim extraction, fact-check retrieval,
 
-    live news retrieval, evidence relevance matching, evidence stance analysis, evidence aggregation, verdict evaluation, and SVM signals.
+    live news retrieval (NewsAPI), evidence relevance matching, evidence stance analysis, evidence aggregation, verdict evaluation, and SVM signals.
     """
 
     def __init__(
         self,
         claim_extractor: Optional[ClaimExtractor] = None,
         fc_retriever: Optional[GoogleFactCheckRetriever] = None,
-        news_retriever: Optional[GDELTNewsRetriever] = None,
+        news_retriever: Optional[Any] = None,
         evidence_matcher: Optional[EvidenceMatcher] = None,
         stance_analyzer: Optional[EvidenceStanceAnalyzer] = None,
         aggregator: Optional[EvidenceAggregator] = None,
@@ -47,7 +53,7 @@ class VerificationService:
     ):
         self.claim_extractor = claim_extractor or get_claim_extractor()
         self.fc_retriever = fc_retriever or get_fact_check_retriever(mock_mode=mock_mode)
-        self.news_retriever = news_retriever or get_news_retriever(mock_mode=mock_mode)
+        self.news_retriever = news_retriever or get_newsapi_retriever(mock_mode=mock_mode)
         self.evidence_matcher = evidence_matcher or get_evidence_matcher()
         self.stance_analyzer = stance_analyzer or get_stance_analyzer()
         self.aggregator = aggregator or get_evidence_aggregator()
@@ -91,15 +97,21 @@ class VerificationService:
             except Exception:
                 service_status["fact_check_api"] = "error"
 
-            # Live-news evidence retrieval
+            # Live-news evidence retrieval (NewsAPI active provider)
             news_evidence = []
             try:
                 news_evidence = self.news_retriever.search_claim_news(claim)
-            except NewsRetrieverRateLimitError:
+            except (NewsAPIKeyError, FactCheckAPIKeyError):
+                service_status["live_news_api"] = "missing_api_key"
+            except (NewsAPIRateLimitError, NewsRetrieverRateLimitError):
                 service_status["live_news_api"] = "rate_limited"
-            except NewsRetrieverAPIError as news_err:
+            except (NewsAPIError, NewsRetrieverAPIError) as news_err:
                 if news_err.status_code == 429:
                     service_status["live_news_api"] = "rate_limited"
+                elif news_err.status_code == 401:
+                    service_status["live_news_api"] = "error_401"
+                elif news_err.status_code == 504:
+                    service_status["live_news_api"] = "error_504"
                 else:
                     service_status["live_news_api"] = f"error_{news_err.status_code}"
             except Exception:
