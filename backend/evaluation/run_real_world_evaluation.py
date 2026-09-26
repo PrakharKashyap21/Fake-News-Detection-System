@@ -121,7 +121,12 @@ def classify_failure(
     return "verdict_logic_error"
 
 
-def run_real_world_evaluation(mock_mode: bool = False):
+def run_real_world_evaluation(
+    mock_mode: bool = False,
+    start_idx: int = 0,
+    limit: Optional[int] = None,
+    output_file: Optional[str] = None
+):
     # 1. Check API Configuration
     fc_key = os.environ.get("GOOGLE_FACT_CHECK_API_KEY", "").strip() or load_env_key("GOOGLE_FACT_CHECK_API_KEY")
     if fc_key and not os.environ.get("GOOGLE_FACT_CHECK_API_KEY"):
@@ -143,14 +148,16 @@ def run_real_world_evaluation(mock_mode: bool = False):
 
     client = TestClient(app)
     dataset_path = os.path.join(os.path.dirname(__file__), "real_world_dataset.json")
-    results_path = os.path.join(os.path.dirname(__file__), "real_world_results.json")
+    results_path = output_file or os.path.join(os.path.dirname(__file__), "real_world_results.json")
 
     with open(dataset_path, "r", encoding="utf-8") as f:
-        cases = json.load(f)
+        all_cases = json.load(f)
+
+    cases = all_cases[start_idx : start_idx + limit] if limit is not None else all_cases[start_idx:]
 
     print("=" * 80)
     print(f"STAGE 32 — REAL-WORLD EVALUATION [{eval_mode_title}]")
-    print(f"Dataset Size: {len(cases)} benchmark cases")
+    print(f"Dataset Size: {len(cases)} benchmark cases (from total {len(all_cases)})")
     print(f"Google Fact Check API Key: {fc_api_status}")
     print(f"NewsAPI Key: {news_api_status}")
     print("=" * 80)
@@ -556,4 +563,34 @@ def run_real_world_evaluation(mock_mode: bool = False):
 
 if __name__ == "__main__":
     is_mock = "--mock" in sys.argv
-    run_real_world_evaluation(mock_mode=is_mock)
+    limit_val = None
+    start_val = 0
+    out_file = None
+
+    if "--limit" in sys.argv:
+        try:
+            l_idx = sys.argv.index("--limit")
+            limit_val = int(sys.argv[l_idx + 1])
+        except (IndexError, ValueError):
+            pass
+
+    if "--start" in sys.argv:
+        try:
+            s_idx = sys.argv.index("--start")
+            start_val = int(sys.argv[s_idx + 1])
+        except (IndexError, ValueError):
+            pass
+
+    if "--output" in sys.argv:
+        try:
+            o_idx = sys.argv.index("--output")
+            out_file = sys.argv[o_idx + 1]
+        except IndexError:
+            pass
+
+    run_real_world_evaluation(
+        mock_mode=is_mock,
+        start_idx=start_val,
+        limit=limit_val,
+        output_file=out_file
+    )
