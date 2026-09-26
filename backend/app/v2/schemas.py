@@ -40,6 +40,7 @@ class EvidenceItem(BaseModel):
     relevance_score: Optional[float] = Field(default=None, ge=0.0, le=1.0)
     stance: StanceType
     raw_rating: Optional[str] = None
+    claim_reviewed: Optional[str] = None
 
 
 class ExtractedClaim(BaseModel):

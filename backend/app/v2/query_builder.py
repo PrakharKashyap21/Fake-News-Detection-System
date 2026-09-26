@@ -1,6 +1,6 @@
 import re
 from typing import List, Set, Optional
-from backend.app.v2.schemas import ExtractedClaim, EvidenceItem
+from backend.app.v2.schemas import ExtractedClaim, EvidenceItem, StanceType
 
 class FactCheckQueryBuilder:
     """Deterministic query builder and relevance filter for Google Fact Check Search API."""
@@ -35,7 +35,8 @@ class FactCheckQueryBuilder:
         "over", "after", "is", "are", "was", "were", "be", "been", "being",
         "have", "has", "had", "do", "does", "did", "will", "would", "can",
         "could", "should", "may", "might", "shall", "must", "to", "from", "up",
-        "down", "in", "out", "on", "off", "for", "with", "by", "at", "it", "its"
+        "down", "in", "out", "on", "off", "for", "with", "by", "at", "it", "its",
+        "of", "said", "says", "reported", "claims", "also"
     }
 
     # Negation words MUST BE PRESERVED
@@ -57,7 +58,7 @@ class FactCheckQueryBuilder:
         return {w for w in words if w in self.NEGATION_WORDS or w.endswith("n't")}
 
     def build_primary_query(self, claim: ExtractedClaim) -> str:
-        """Constructs a deterministic, high-information primary query string."""
+        """Constructs a deterministic, high-precision primary query string from the claim."""
         if not claim or not claim.text:
             return ""
 
@@ -67,17 +68,19 @@ class FactCheckQueryBuilder:
         if not clean_text:
             clean_text = raw_text
 
-        # 2. Extract tokens while preserving entities, numbers, and negations
+        # 2. Extract tokens preserving entities, action verbs, substantive objects, numbers, and negations
         tokens = re.findall(r"\b[A-Za-z0-9'-]+\b", clean_text)
         refined_tokens = []
 
         for token in tokens:
             t_lower = token.lower()
-            # Keep if negation, entity/capitalized, digit/date, or meaningful content word
+            # Preserve negations
             if t_lower in self.NEGATION_WORDS or t_lower.endswith("n't"):
                 refined_tokens.append(token)
+            # Preserve capitalized entities / acronyms / digits
             elif token[0].isupper() or any(char.isdigit() for char in token):
                 refined_tokens.append(token)
+            # Preserve substantive words
             elif len(t_lower) > 2 and t_lower not in self.LOW_INFO_WORDS:
                 refined_tokens.append(token)
 
@@ -85,11 +88,13 @@ class FactCheckQueryBuilder:
         if len(refined_tokens) < 2:
             refined_tokens = tokens
 
-        query = " ".join(refined_tokens)
+        # Take the top 8 most informative tokens
+        query_tokens = refined_tokens[:8]
+        query = " ".join(query_tokens)
 
-        # 4. Enforce max query length (bounded at 120 chars)
-        if len(query) > 120:
-            query = query[:120].rsplit(" ", 1)[0]
+        # 4. Enforce max query length (bounded at 90 chars for search precision)
+        if len(query) > 90:
+            query = query[:90].rsplit(" ", 1)[0]
 
         return query.strip()
 
@@ -120,43 +125,33 @@ class FactCheckQueryBuilder:
                 if ent.lower() not in [t.lower() for t in fallback_tokens]:
                     fallback_tokens.append(ent)
 
-        query = " ".join(fallback_tokens[:8])
-        if len(query) > 100:
-            query = query[:100].rsplit(" ", 1)[0]
+        query = " ".join(fallback_tokens[:6])
+        if len(query) > 80:
+            query = query[:80].rsplit(" ", 1)[0]
 
         return query.strip()
 
     def filter_relevant_evidence(
         self, claim: ExtractedClaim, evidence_items: List[EvidenceItem]
     ) -> List[EvidenceItem]:
-        """Applies a lightweight deterministic lexical relevance filter on retrieved evidence items."""
+        """Applies deterministic relevance filtering on retrieved evidence items."""
         if not claim or not evidence_items:
             return []
 
-        claim_tokens = set(re.findall(r"\b[A-Za-z0-9]+\b", claim.text.lower()))
-        # Filter low info stopwords from claim tokens
-        substantive_claim_tokens = {t for t in claim_tokens if t not in self.LOW_INFO_WORDS and len(t) > 2}
+        # Use EvidenceMatcher to perform exact claim and entity+predicate+object relevance filtering
+        from backend.app.v2.evidence_matcher import get_evidence_matcher, RelevanceClassification
+        matcher = get_evidence_matcher()
 
         filtered_items: List[EvidenceItem] = []
-
         for item in evidence_items:
-            review_text = f"{item.title or ''} {item.snippet or ''}".lower()
-            review_tokens = set(re.findall(r"\b[A-Za-z0-9]+\b", review_text))
-            substantive_review_tokens = {t for t in review_tokens if t not in self.LOW_INFO_WORDS and len(t) > 2}
-
-            # Lexical overlap
-            overlap = substantive_claim_tokens.intersection(substantive_review_tokens)
-
-            # Check if any proper noun / number matches directly
-            entity_overlap = False
-            for token in substantive_claim_tokens:
-                if (token.isdigit() or token.isupper() or len(token) >= 5) and token in review_tokens:
-                    entity_overlap = True
-                    break
-
-            # Relevance rule: Must have at least 1 overlapping substantive token or entity overlap
-            if len(overlap) >= 1 or entity_overlap:
-                filtered_items.append(item)
+            match_res = matcher.match_evidence(claim, item)
+            if match_res.relevance == RelevanceClassification.RELEVANT:
+                # Update item with matched stance and relevance score
+                item_copy = item.model_copy(update={
+                    "stance": match_res.stance,
+                    "relevance_score": match_res.token_overlap_ratio
+                })
+                filtered_items.append(item_copy)
 
         return filtered_items
 

@@ -206,7 +206,7 @@ class GoogleFactCheckRetriever:
             if not isinstance(claim_reviews, list):
                 continue
 
-            raw_claim_text = raw_claim.get("text", claim.text)
+            raw_claim_text = raw_claim.get("text")
             claim_date = raw_claim.get("claimDate")
 
             for review_idx, review in enumerate(claim_reviews):
@@ -221,14 +221,15 @@ class GoogleFactCheckRetriever:
                 publisher_site = publisher_info.get("site")
 
                 review_url = str(review.get("url", "")).strip()
-                review_title = str(review.get("title", raw_claim_text)).strip() or raw_claim_text
+                review_title = str(review.get("title", raw_claim_text or claim.text)).strip() or (raw_claim_text or claim.text)
                 textual_rating = review.get("textualRating")
                 review_date = review.get("reviewDate") or claim_date
 
                 domain = extract_domain_from_url(review_url, fallback_site=publisher_site)
                 stance = determine_stance(textual_rating)
 
-                snippet = f"Reviewed Claim: '{raw_claim_text}' | Rating: {textual_rating or 'Unrated'}"
+                display_claim = raw_claim_text or review_title
+                snippet = f"Reviewed Claim: '{display_claim}' | Rating: {textual_rating or 'Unrated'}"
 
                 item_id = f"fc_{claim.claim_id}_{claim_idx+1}_{review_idx+1}"
 
@@ -246,7 +247,8 @@ class GoogleFactCheckRetriever:
                         credibility_score=None,
                         relevance_score=None,
                         stance=stance,
-                        raw_rating=str(textual_rating) if textual_rating is not None else None
+                        raw_rating=str(textual_rating) if textual_rating is not None else None,
+                        claim_reviewed=raw_claim_text
                     )
                 )
 
@@ -280,7 +282,8 @@ class GoogleFactCheckRetriever:
                     credibility_score=None,
                     relevance_score=None,
                     stance=StanceType.CONTRADICTS,
-                    raw_rating="False"
+                    raw_rating="False",
+                    claim_reviewed=claim.text
                 ),
                 EvidenceItem(
                     id=f"fc_mock_{c_id}_2",
@@ -295,7 +298,8 @@ class GoogleFactCheckRetriever:
                     credibility_score=None,
                     relevance_score=None,
                     stance=StanceType.CONTRADICTS,
-                    raw_rating="False"
+                    raw_rating="False",
+                    claim_reviewed=claim.text
                 )
             ]
 
@@ -316,7 +320,8 @@ class GoogleFactCheckRetriever:
                     credibility_score=None,
                     relevance_score=None,
                     stance=StanceType.SUPPORTS,
-                    raw_rating="True"
+                    raw_rating="True",
+                    claim_reviewed=claim.text
                 )
             ]
 
