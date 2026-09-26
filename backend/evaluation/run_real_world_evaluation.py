@@ -24,6 +24,7 @@ if ROOT_DIR not in sys.path:
 
 from backend.app.main import app
 from backend.app.v2.schemas import StanceType, EvidenceSourceType
+from backend.app.v2.newsapi_retriever import load_env_key
 
 def sanitize_secret(obj: Any) -> Any:
     """Sanitizes text strings to prevent accidental API key exposure."""
@@ -122,8 +123,15 @@ def classify_failure(
 
 def run_real_world_evaluation(mock_mode: bool = False):
     # 1. Check API Configuration
-    api_key = os.environ.get("GOOGLE_FACT_CHECK_API_KEY", "").strip()
-    api_key_status = "configured" if api_key else "missing"
+    fc_key = os.environ.get("GOOGLE_FACT_CHECK_API_KEY", "").strip() or load_env_key("GOOGLE_FACT_CHECK_API_KEY")
+    if fc_key and not os.environ.get("GOOGLE_FACT_CHECK_API_KEY"):
+        os.environ["GOOGLE_FACT_CHECK_API_KEY"] = fc_key
+    fc_api_status = "configured" if fc_key else "missing"
+
+    news_key = os.environ.get("NEWS_API_KEY", "").strip() or load_env_key("NEWS_API_KEY")
+    if news_key and not os.environ.get("NEWS_API_KEY"):
+        os.environ["NEWS_API_KEY"] = news_key
+    news_api_status = "configured" if news_key else "missing"
 
     if mock_mode:
         from backend.app.v2.verification_service import get_verification_service
@@ -131,7 +139,7 @@ def run_real_world_evaluation(mock_mode: bool = False):
         app.dependency_overrides[router_get_svc] = lambda: get_verification_service(mock_mode=True)
         eval_mode_title = "MOCK BENCHMARK EVALUATION (OFFLINE)"
     else:
-        eval_mode_title = "PARTIAL REAL-WORLD API EVALUATION" if api_key_status == "missing" else "COMPLETE REAL-WORLD API EVALUATION"
+        eval_mode_title = "COMPLETE REAL-WORLD API EVALUATION" if (fc_api_status == "configured" and news_api_status == "configured") else "PARTIAL REAL-WORLD API EVALUATION"
 
     client = TestClient(app)
     dataset_path = os.path.join(os.path.dirname(__file__), "real_world_dataset.json")
@@ -141,10 +149,10 @@ def run_real_world_evaluation(mock_mode: bool = False):
         cases = json.load(f)
 
     print("=" * 80)
-    print(f"STAGE 30 — REAL-WORLD EVALUATION [{eval_mode_title}]")
+    print(f"STAGE 32 — REAL-WORLD EVALUATION [{eval_mode_title}]")
     print(f"Dataset Size: {len(cases)} benchmark cases")
-    print(f"Google Fact Check API Key: {api_key_status}")
-    print(f"GDELT DOC 2.0 API: available (no API key required)")
+    print(f"Google Fact Check API Key: {fc_api_status}")
+    print(f"NewsAPI Key: {news_api_status}")
     print("=" * 80)
 
     case_results = []
@@ -373,15 +381,14 @@ def run_real_world_evaluation(mock_mode: bool = False):
     conflict_count = sum(1 for c in case_results if c["has_conflict"])
     conflict_rate = round((conflict_count / total_cases) * 100, 2)
 
-    # FIX (Stage 30J): renamed from "service_failure" to "gdelt_unavailability" to
-    # accurately reflect what this metric measures — cases where the LIVE_NEWS (GDELT)
-    # provider returned a non-ok status. The verification pipeline itself completed
-    # for all cases; this is NOT a pipeline crash rate.
-    gdelt_unavailability_count = sum(
+    # Measures cases where the LIVE_NEWS (NewsAPI) provider returned a non-ok status.
+    live_news_unavailability_count = sum(
         1 for c in case_results
         if c["service_status"].get("live_news_api", "ok") != "ok"
     )
-    gdelt_unavailability_rate = round((gdelt_unavailability_count / total_cases) * 100, 2)
+    live_news_unavailability_rate = round((live_news_unavailability_count / total_cases) * 100, 2)
+    gdelt_unavailability_count = live_news_unavailability_count
+    gdelt_unavailability_rate = live_news_unavailability_rate
 
     # Precision, Recall, F1
     def calc_p_r_f1(pred_label: str, gt_label: str):
@@ -438,7 +445,8 @@ def run_real_world_evaluation(mock_mode: bool = False):
     # Assembly of Metrics
     metrics = {
         "evaluation_mode": eval_mode_title,
-        "google_fact_check_api_status": api_key_status,
+        "google_fact_check_api_status": fc_api_status,
+        "news_api_status": news_api_status,
         "total_cases": total_cases,
         "claim_extraction_success_rate": extraction_success_rate,
         "fact_check_hit_rate": fact_check_hit_rate,
@@ -462,8 +470,8 @@ def run_real_world_evaluation(mock_mode: bool = False):
         "false_negative_rate": false_negative_rate,
         "conflict_rate": conflict_rate,
         "conflict_count": conflict_count,
-        # FIX (Stage 30J): renamed from service_failure_rate/count — measures
-        # GDELT (live_news_api) unavailability, not overall pipeline failure.
+        "live_news_unavailability_rate": live_news_unavailability_rate,
+        "live_news_unavailability_count": live_news_unavailability_count,
         "gdelt_unavailability_rate": gdelt_unavailability_rate,
         "gdelt_unavailability_count": gdelt_unavailability_count,
         "precision_supported": p_supp,
@@ -495,11 +503,11 @@ def run_real_world_evaluation(mock_mode: bool = False):
 
     # Print Summary Report
     print("\n" + "=" * 80)
-    print(f"STAGE 30 — EVALUATION SUMMARY REPORT [{eval_mode_title}]")
+    print(f"STAGE 32 — EVALUATION SUMMARY REPORT [{eval_mode_title}]")
     print("=" * 80)
     print(f"API Configuration:")
-    print(f"  - Google Fact Check API Key: {api_key_status.upper()}")
-    print(f"  - GDELT DOC 2.0 API:         AVAILABLE (NO KEY REQUIRED)")
+    print(f"  - Google Fact Check API Key: {fc_api_status.upper()}")
+    print(f"  - NewsAPI Key:               {news_api_status.upper()}")
     print("-" * 80)
     print(f"Dataset & Metrics Overview:")
     print(f"  Total Benchmark Cases:              {total_cases}")
@@ -518,7 +526,7 @@ def run_real_world_evaluation(mock_mode: bool = False):
     print(f"  False Positive Rate (Fake -> Real): {false_positive_rate}%")
     print(f"  False Negative Rate (Real -> Fake): {false_negative_rate}%")
     print(f"  Conflict Rate:                      {conflict_rate}% ({conflict_count} cases)")
-    print(f"  GDELT Unavailability Rate:          {gdelt_unavailability_rate}% ({gdelt_unavailability_count} cases)")
+    print(f"  Live-News Unavailability Rate:      {live_news_unavailability_rate}% ({live_news_unavailability_count} cases)")
     print("-" * 80)
     print("Classification Metrics (Precision / Recall / F1):")
     print(f"  - SUPPORTED:    Precision: {p_supp}% | Recall: {r_supp}% | F1: {f1_supp}")
